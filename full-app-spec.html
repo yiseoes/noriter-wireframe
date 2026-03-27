@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>놀이터 NoriTer — 화면정의서 + 와이어프레임</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff; --bg-secondary: #f8f9fb; --bg-tertiary: #f1f3f5;
+            --bg-hover: #e9ecef; --border: #dee2e6; --border-light: #e9ecef;
+            --text-primary: #212529; --text-secondary: #495057; --text-muted: #868e96;
+            --brand: #6c5ce7; --brand-light: #7c6ef0; --brand-bg: #f3f1ff;
+            --brand-gradient: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --success: #12b886; --success-bg: #e6fcf5;
+            --warning: #f59f00; --warning-bg: #fff9db;
+            --danger: #fa5252; --danger-bg: #fff5f5;
+            --info: #339af0; --info-bg: #e7f5ff;
+            --agent-cto: #4263eb; --agent-cto-bg: #edf2ff;
+            --agent-planning: #ae3ec9; --agent-planning-bg: #f8f0fc;
+            --agent-design: #e64980; --agent-design-bg: #fff0f6;
+            --agent-frontend: #0ca678; --agent-frontend-bg: #e6fcf5;
+            --agent-backend: #e67700; --agent-backend-bg: #fff4e6;
+            --agent-qa: #f76707; --agent-qa-bg: #fff4e6;
+            --agent-system: #868e96;
+            /* 정의서 주석 컬러 */
+            --spec-bg: #fff3bf;
+            --spec-border: #ffd43b;
+            --spec-text: #664d03;
+            --spec-arrow: #f59f00;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans KR', -apple-system, sans-serif; background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; }
+
+        /* ===== 정의서 모드 토글 ===== */
+        .spec-toggle {
+            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+            padding: 12px 24px; border-radius: 12px;
+            background: var(--spec-bg); border: 2px solid var(--spec-border);
+            color: var(--spec-text); font-size: 14px; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+        .spec-toggle:hover { transform: scale(1.05); }
+        .spec-toggle.active { background: var(--spec-text); color: white; border-color: var(--spec-text); }
+
+        /* ===== 정의서 주석 (기본 숨김) ===== */
+        .spec-note {
+            display: none;
+            position: absolute;
+            background: var(--spec-bg);
+            border: 2px solid var(--spec-border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--spec-text);
+            z-index: 50;
+            max-width: 280px;
+            line-height: 1.5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .spec-note::before {
+            content: '📌';
+            margin-right: 4px;
+        }
+        body.spec-mode .spec-note { display: block; }
+
+        /* 정의서 모드일 때 인터랙티브 요소에 테두리 */
+        body.spec-mode [data-spec] {
+            outline: 2px dashed var(--spec-arrow) !important;
+            outline-offset: 2px;
+            position: relative;
+        }
+
+        /* 정의서 모드 플로우차트 */
+        .spec-flowchart {
+            display: none;
+            background: var(--spec-bg);
+            border: 2px solid var(--spec-border);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 80px 32px 0;
+            max-width: 1200px;
+            margin-left: auto; margin-right: auto;
+        }
+        body.spec-mode .spec-flowchart { display: block; }
+        .spec-flowchart h2 { color: var(--spec-text); font-size: 20px; margin-bottom: 20px; }
+        .spec-flowchart h3 { color: var(--spec-text); font-size: 16px; margin: 20px 0 12px; }
+
+        .flow-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .flow-table th { text-align: left; padding: 8px 12px; background: rgba(255,212,59,0.3); color: var(--spec-text); border-bottom: 2px solid var(--spec-border); font-size: 12px; }
+        .flow-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,212,59,0.3); color: var(--spec-text); vertical-align: top; }
+        .flow-table tr:hover { background: rgba(255,212,59,0.1); }
+        .flow-tag { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+        .flow-tag-click { background: #d0ebff; color: #1864ab; }
+        .flow-tag-modal { background: #e5dbff; color: #5f3dc4; }
+        .flow-tag-full { background: #ffe3e3; color: #c92a2a; }
+        .flow-tag-api { background: #d3f9d8; color: #2b8a3e; }
+        .flow-tag-sse { background: #fff3bf; color: #e67700; }
+        .flow-tag-nav { background: #f1f3f5; color: #495057; }
+
+        /* ===== 앱 스타일 (full-app.html과 동일) ===== */
+        .header {
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light); padding: 0 32px; height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 36px; }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: var(--brand); text-decoration: none; cursor: pointer; }
+        .logo-icon { width: 32px; height: 32px; background: var(--brand-gradient); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white; }
+        .nav { display: flex; gap: 4px; }
+        .nav a { color: var(--text-secondary); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; position: relative; }
+        .nav a:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+        .nav a.active { background: var(--brand-bg); color: var(--brand); }
+        .header-right { display: flex; align-items: center; gap: 12px; }
+        .status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; }
+        .theme-toggle { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border-light); background: var(--bg-primary); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; position: relative; }
+
+        .hero { padding: 140px 32px 80px; text-align: center; position: relative; }
+        .hero::before { content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(108,92,231,0.08) 0%, transparent 70%); pointer-events: none; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; background: var(--brand-bg); color: var(--brand); font-size: 13px; font-weight: 600; margin-bottom: 20px; }
+        .hero h1 { font-size: 52px; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+        .hero h1 span { background: var(--brand-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 18px; color: var(--text-secondary); max-width: 520px; margin: 0 auto 36px; line-height: 1.7; }
+        .hero-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-hero { padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; position: relative; }
+        .btn-hero-primary { background: var(--brand-gradient); color: white; box-shadow: 0 4px 14px rgba(108,92,231,0.3); }
+        .btn-hero-primary:hover { transform: translateY(-2px); }
+        .btn-hero-secondary { background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border); }
+
+        .studio-section { padding: 60px 32px; background: var(--bg-secondary); }
+        .studio-inner { max-width: 1000px; margin: 0 auto; text-align: center; }
+        .section-label { font-size: 14px; font-weight: 600; color: var(--brand); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        .section-heading { font-size: 28px; font-weight: 700; margin-bottom: 40px; }
+        .agent-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+        .agent-card { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 12px; padding: 20px 12px; text-align: center; }
+        .agent-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 10px; }
+        .agent-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .agent-desc { font-size: 11px; color: var(--text-muted); }
+
+        .playground { padding: 80px 32px; max-width: 1200px; margin: 0 auto; }
+        .playground-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; }
+        .playground-sub { font-size: 15px; color: var(--text-muted); margin-top: 4px; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .game-card { background: var(--bg-primary); border: 1px solid var(--border-light); border-radius: 16px; overflow: hidden; cursor: pointer; position: relative; }
+        .game-card:hover { border-color: var(--brand); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+        .game-thumbnail { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 48px; position: relative; }
+        .game-thumbnail::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(transparent, var(--bg-primary)); }
+        .game-info { padding: 16px 20px 20px; }
+        .game-genre { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+        .game-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+        .game-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; }
+        .game-footer { display: flex; justify-content: space-between; align-items: center; }
+        .game-date { font-size: 12px; color: var(--text-muted); }
+        .btn-play { padding: 8px 20px; border-radius: 8px; background: var(--brand-gradient); color: white; border: none; font-size: 13px; font-weight: 600; cursor: pointer; position: relative; }
+        .game-card-empty { border: 2px dashed var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 320px; position: relative; }
+        .game-card-empty:hover { border-color: var(--brand); background: var(--brand-bg); }
+        .empty-icon { font-size: 40px; margin-bottom: 12px; color: var(--text-muted); }
+        .empty-text { font-size: 15px; font-weight: 600; color: var(--text-secondary); }
+        .empty-hint { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+        .footer { padding: 40px 32px; border-top: 1px solid var(--border-light); text-align: center; color: var(--text-muted); font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<!-- ===== 화면정의서 모드 토글 버튼 ===== -->
+<button class="spec-toggle" id="specToggle" onclick="toggleSpecMode()">
+    📋 화면정의서 모드 ON
+</button>
+
+<!-- ===== 화면정의서 플로우차트 (정의서 모드에서만 표시) ===== -->
+<div class="spec-flowchart">
+    <h2>📋 놀이터 NoriTer — 화면 인터랙션 정의서</h2>
+    <p style="font-size:13px;margin-bottom:8px;color:var(--spec-text)">모든 화면은 홈(단일 페이지) 위에 모달로 동작합니다. URL 변경 없이 모달 레이어로 전환.</p>
+    <p style="font-size:12px;margin-bottom:24px;color:var(--spec-text);opacity:0.7">노란 점선 테두리 = 클릭 가능한 인터랙티브 요소 | 📌 노란 박스 = 동작 설명</p>
+
+    <h3>🗺️ 전체 화면 흐름도</h3>
+    <pre style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--spec-text);line-height:1.8;background:rgba(255,212,59,0.15);padding:20px;border-radius:8px;overflow-x:auto">
+┌─────────────────────────────────────────────────────────────────┐
+│                        홈 (메인 페이지)                           │
+│                                                                 │
+│  ┌─────────┐   ┌───────────┐   ┌──────────┐   ┌──────────┐    │
+│  │ 게임 생성 │   │ 내 프로젝트 │   │ 감사 로그  │   │   설정    │    │
+│  │  버튼    │   │  네비      │   │  네비     │   │  네비    │    │
+│  └────┬────┘   └─────┬─────┘   └─────┬────┘   └────┬─────┘    │
+│       │              │               │              │          │
+│       ▼              ▼               ▼              ▼          │
+│  ┌─────────┐   ┌───────────┐   ┌──────────┐   ┌──────────┐    │
+│  │ 생성 모달 │   │ 목록 모달  │   │ 감사 모달  │   │ 설정 모달 │    │
+│  │ (일반)   │   │ (일반)     │   │ (일반)    │   │ (일반)   │    │
+│  └────┬────┘   └─────┬─────┘   └──────────┘   └──────────┘    │
+│       │              │                                         │
+│       │         카드 클릭                                        │
+│       │              │                                         │
+│       ▼              ▼                                         │
+│  ┌──────────────────────────────────────────┐                  │
+│  │         프로젝트 상세 (풀스크린 모달)         │                  │
+│  │                                          │                  │
+│  │  ┌──────┬──────┬──────┬──────┬──────┐   │                  │
+│  │  │ 개요  │ 로그  │ 대화  │미리보기│소스코드│   │                  │
+│  │  └──────┴──────┴──────┴──────┴──────┘   │                  │
+│  │         (탭 전환, SSE 실시간 연동)          │                  │
+│  └──────────────────────────────────────────┘                  │
+│                                                                 │
+│  ┌──────────────────────────────────────────┐                  │
+│  │        플레이그라운드 [플레이▶] 버튼          │                  │
+│  │        → 게임 iframe 팝업 (별도 모달)       │                  │
+│  └──────────────────────────────────────────┘                  │
+└─────────────────────────────────────────────────────────────────┘
+    </pre>
+
+    <h3>🖱️ 헤더 (GNB) 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>API</th></tr></thead>
+        <tbody>
+            <tr><td>로고 "놀이터"</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>모든 모달 닫기 → 홈으로 복귀</td><td>—</td></tr>
+            <tr><td>[홈] 네비</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>모든 모달 닫기 → 홈으로 복귀</td><td>—</td></tr>
+            <tr><td>[내 프로젝트] 네비</td><td><span class="flow-tag flow-tag-modal">모달 열기</span></td><td>프로젝트 목록 모달 (일반) 표시</td><td><span class="flow-tag flow-tag-api">API-PRJ-002</span></td></tr>
+            <tr><td>[감사 로그] 네비</td><td><span class="flow-tag flow-tag-modal">모달 열기</span></td><td>감사 로그 모달 (일반) 표시</td><td><span class="flow-tag flow-tag-api">API-LOG-003</span></td></tr>
+            <tr><td>[설정] 네비</td><td><span class="flow-tag flow-tag-modal">모달 열기</span></td><td>설정 모달 (일반) 표시</td><td><span class="flow-tag flow-tag-api">API-SET-001</span></td></tr>
+            <tr><td>🌙 테마 토글</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>라이트 ↔ 다크 테마 전환 (CSS 변수 교체)</td><td>—</td></tr>
+            <tr><td>● 시스템 정상</td><td><span class="flow-tag flow-tag-api">자동</span></td><td>앱 로드 시 헬스체크 호출, 상태 표시</td><td><span class="flow-tag flow-tag-api">API-SYS-001</span></td></tr>
+        </tbody>
+    </table>
+
+    <h3>🏠 히어로 (인트로) 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>API</th></tr></thead>
+        <tbody>
+            <tr><td>[🎮 게임 생성] 버튼</td><td><span class="flow-tag flow-tag-modal">모달 열기</span></td><td>게임 생성 모달 표시 (프로젝트명, 장르, 요구사항 입력)</td><td>—</td></tr>
+            <tr><td>[↓ 게임 둘러보기] 버튼</td><td><span class="flow-tag flow-tag-nav">스크롤</span></td><td>플레이그라운드 섹션으로 부드러운 스크롤</td><td>—</td></tr>
+        </tbody>
+    </table>
+
+    <h3>🎮 게임 생성 모달 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>검증/API</th></tr></thead>
+        <tbody>
+            <tr><td>프로젝트명 입력</td><td><span class="flow-tag flow-tag-click">입력</span></td><td>선택 사항. 미입력 시 서버에서 자동 생성</td><td>최대 100자 (NT-ERR-V002)</td></tr>
+            <tr><td>장르 태그</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>단일 선택, 재클릭으로 해제. 선택 시 보라색 활성</td><td>PUZZLE/ACTION/ARCADE/SHOOTING/STRATEGY/OTHER</td></tr>
+            <tr><td>요구사항 텍스트</td><td><span class="flow-tag flow-tag-click">입력</span></td><td>실시간 글자수 카운터 업데이트. 10자 이상 시 초록색 ✓</td><td>최소 10자 필수 (NT-ERR-V001)</td></tr>
+            <tr><td>[게임 생성 요청] 버튼</td><td><span class="flow-tag flow-tag-api">API 호출</span></td><td>① API-PRJ-001 호출<br>② 성공 → 모달 닫기 → 풀스크린 상세 모달 열기 (SSE 연결)<br>③ 실패(503) → "API 키를 먼저 설정해주세요" 토스트</td><td><span class="flow-tag flow-tag-api">API-PRJ-001</span></td></tr>
+            <tr><td>✕ 닫기 / ESC / 바깥 클릭</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>모달 닫기, 입력 내용 유지 (다시 열면 남아있음)</td><td>—</td></tr>
+        </tbody>
+    </table>
+
+    <h3>🕹️ 플레이그라운드 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>API</th></tr></thead>
+        <tbody>
+            <tr><td>[+ 새 게임 만들기] 버튼</td><td><span class="flow-tag flow-tag-modal">모달 열기</span></td><td>게임 생성 모달 표시</td><td>—</td></tr>
+            <tr><td>게임 카드 [플레이▶]</td><td><span class="flow-tag flow-tag-modal">모달 열기</span></td><td>게임 미리보기 iframe 팝업 (게임 바로 실행)</td><td><span class="flow-tag flow-tag-api">API-GAM-001</span></td></tr>
+            <tr><td>게임 카드 영역 클릭</td><td><span class="flow-tag flow-tag-full">풀스크린</span></td><td>해당 프로젝트 상세 풀스크린 모달 열기</td><td><span class="flow-tag flow-tag-api">API-PRJ-003</span></td></tr>
+            <tr><td>빈 카드 (✨ 나만의 게임)</td><td><span class="flow-tag flow-tag-modal">모달 열기</span></td><td>게임 생성 모달 표시</td><td>—</td></tr>
+        </tbody>
+    </table>
+
+    <h3>📂 내 프로젝트 모달 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>API</th></tr></thead>
+        <tbody>
+            <tr><td>상태 필터 (전체/진행중/완료/실패)</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>목록 필터링 → API 재호출</td><td><span class="flow-tag flow-tag-api">API-PRJ-002</span> ?status=</td></tr>
+            <tr><td>프로젝트 카드 클릭</td><td><span class="flow-tag flow-tag-full">풀스크린</span></td><td>목록 모달 닫기 → 프로젝트 상세 풀스크린 모달 열기</td><td><span class="flow-tag flow-tag-api">API-PRJ-003</span></td></tr>
+            <tr><td>스크롤 하단 도달</td><td><span class="flow-tag flow-tag-api">자동</span></td><td>다음 페이지 로드 (무한 스크롤)</td><td><span class="flow-tag flow-tag-api">API-PRJ-002</span> ?page=N</td></tr>
+        </tbody>
+    </table>
+
+    <h3>📊 프로젝트 상세 — 풀스크린 모달 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>API</th></tr></thead>
+        <tbody>
+            <tr><td>← 돌아가기</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>풀스크린 닫기 → 홈으로 복귀. SSE 연결 해제</td><td>—</td></tr>
+            <tr><td>[중단] 버튼</td><td><span class="flow-tag flow-tag-api">API 호출</span></td><td>확인 다이얼로그 → API 호출 → 상태 CANCELLED</td><td><span class="flow-tag flow-tag-api">API-PRJ-007</span></td></tr>
+            <tr><td>[삭제] 버튼</td><td><span class="flow-tag flow-tag-api">API 호출</span></td><td>확인 다이얼로그 → API 호출 → 풀스크린 닫기</td><td><span class="flow-tag flow-tag-api">API-PRJ-005</span></td></tr>
+            <tr><td>풀스크린 열릴 때 (IN_PROGRESS)</td><td><span class="flow-tag flow-tag-sse">SSE 연결</span></td><td>자동으로 SSE 연결. 실시간 로그/스테이지/대화 수신</td><td><span class="flow-tag flow-tag-api">API-SSE-001</span></td></tr>
+        </tbody>
+    </table>
+
+    <h3>📊 상세 — 탭별 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>탭</th><th>요소</th><th>동작</th><th>API/SSE</th></tr></thead>
+        <tbody>
+            <tr><td rowspan="2">📋 개요</td><td>산출물 카드</td><td>클릭 시 산출물 JSON 내용 모달 표시</td><td>로컬 데이터 (API-PRJ-003 응답에 포함)</td></tr>
+            <tr><td>토큰 사용량 차트</td><td>에이전트별 막대 그래프 표시</td><td>API-PRJ-003 tokenUsage</td></tr>
+            <tr><td rowspan="3">📜 로그</td><td>레벨 필터 (INFO/AGENT/WARN/ERROR)</td><td>로그 목록 필터링</td><td><span class="flow-tag flow-tag-api">API-LOG-001</span> ?level=</td></tr>
+            <tr><td>에이전트 필터</td><td>특정 에이전트 로그만 표시</td><td><span class="flow-tag flow-tag-api">API-LOG-001</span> ?agentRole=</td></tr>
+            <tr><td>실시간 로그 추가</td><td>SSE log 이벤트 수신 시 하단에 자동 추가 (자동 스크롤)</td><td><span class="flow-tag flow-tag-sse">SSE: log</span></td></tr>
+            <tr><td rowspan="2">💬 대화</td><td>에이전트 필터</td><td>특정 에이전트 메시지만 표시</td><td><span class="flow-tag flow-tag-api">API-LOG-002</span> ?agentRole=</td></tr>
+            <tr><td>실시간 메시지 추가</td><td>SSE agent-msg 이벤트 수신 시 채팅 버블 추가</td><td><span class="flow-tag flow-tag-sse">SSE: agent-msg</span></td></tr>
+            <tr><td rowspan="4">🎮 미리보기</td><td>[🔄 새로고침]</td><td>게임 iframe 리로드</td><td>—</td></tr>
+            <tr><td>[⛶ 전체화면]</td><td>iframe 전체화면 토글</td><td>—</td></tr>
+            <tr><td>[📥 다운로드 ZIP]</td><td>게임 소스 ZIP 파일 다운로드</td><td><span class="flow-tag flow-tag-api">API-GAM-004</span></td></tr>
+            <tr><td>[수정 요청 보내기]</td><td>피드백 전송 → 상태 REVISION → 파이프라인 재실행</td><td><span class="flow-tag flow-tag-api">API-PRJ-006</span></td></tr>
+            <tr><td rowspan="2">📄 소스코드</td><td>파일 트리 클릭</td><td>해당 파일 내용 코드 뷰어에 표시</td><td><span class="flow-tag flow-tag-api">API-GAM-003</span></td></tr>
+            <tr><td>파일 탭 전환</td><td>index.html / style.css / game.js 전환</td><td><span class="flow-tag flow-tag-api">API-GAM-003</span></td></tr>
+        </tbody>
+    </table>
+
+    <h3>📊 SSE 실시간 이벤트 처리 (IN_PROGRESS/REVISION 상태)</h3>
+    <table class="flow-table">
+        <thead><tr><th>SSE 이벤트</th><th>UI 반영</th><th>반영 대상</th></tr></thead>
+        <tbody>
+            <tr><td><span class="flow-tag flow-tag-sse">log</span></td><td>로그 탭 하단에 실시간 추가 + 자동 스크롤</td><td>로그 탭</td></tr>
+            <tr><td><span class="flow-tag flow-tag-sse">stage-update</span></td><td>파이프라인 타임라인 아이콘 변경 + 진행률 갱신</td><td>파이프라인 + 진행률</td></tr>
+            <tr><td><span class="flow-tag flow-tag-sse">agent-msg</span></td><td>대화 탭에 채팅 버블 실시간 추가</td><td>대화 탭</td></tr>
+            <tr><td><span class="flow-tag flow-tag-sse">error</span></td><td>에러 토스트 표시 + 로그 탭에 에러 항목 추가</td><td>토스트 + 로그 탭</td></tr>
+            <tr><td><span class="flow-tag flow-tag-sse">complete</span></td><td>상태 배지 → COMPLETED, 미리보기 탭 활성화, 완성 토스트</td><td>전체 UI 갱신</td></tr>
+            <tr><td><span class="flow-tag flow-tag-sse">cancelled</span></td><td>상태 배지 → CANCELLED, SSE 연결 해제</td><td>전체 UI 갱신</td></tr>
+        </tbody>
+    </table>
+
+    <h3>⚙️ 설정 모달 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>API</th></tr></thead>
+        <tbody>
+            <tr><td>현재 API 키 상태</td><td><span class="flow-tag flow-tag-api">자동</span></td><td>모달 열릴 때 API 키 조회 (마스킹 표시)</td><td><span class="flow-tag flow-tag-api">API-SET-001</span></td></tr>
+            <tr><td>[유효성 검증] 버튼</td><td><span class="flow-tag flow-tag-api">API 호출</span></td><td>입력한 키로 실제 검증 → 유효/무효 결과 표시</td><td><span class="flow-tag flow-tag-api">API-SET-003</span></td></tr>
+            <tr><td>[저장] 버튼</td><td><span class="flow-tag flow-tag-api">API 호출</span></td><td>API 키 암호화 저장 → 성공 토스트</td><td><span class="flow-tag flow-tag-api">API-SET-002</span></td></tr>
+            <tr><td>시스템 상태</td><td><span class="flow-tag flow-tag-api">자동</span></td><td>서버/DB/Claude API 상태 표시</td><td><span class="flow-tag flow-tag-api">API-SYS-001</span></td></tr>
+        </tbody>
+    </table>
+
+    <h3>📋 감사 로그 모달 인터랙션</h3>
+    <table class="flow-table">
+        <thead><tr><th>요소</th><th>이벤트</th><th>동작</th><th>API</th></tr></thead>
+        <tbody>
+            <tr><td>이벤트 타입 필터</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>이벤트 유형별 필터링</td><td><span class="flow-tag flow-tag-api">API-LOG-003</span> ?eventType=</td></tr>
+            <tr><td>날짜 범위 필터</td><td><span class="flow-tag flow-tag-click">선택</span></td><td>기간별 필터링</td><td><span class="flow-tag flow-tag-api">API-LOG-003</span> ?startDate=&endDate=</td></tr>
+            <tr><td>프로젝트 필터</td><td><span class="flow-tag flow-tag-click">선택</span></td><td>특정 프로젝트 감사 로그만 표시</td><td><span class="flow-tag flow-tag-api">API-LOG-003</span> ?projectId=</td></tr>
+            <tr><td>페이지네이션</td><td><span class="flow-tag flow-tag-click">클릭</span></td><td>다음/이전 페이지 로드</td><td><span class="flow-tag flow-tag-api">API-LOG-003</span> ?page=N</td></tr>
+        </tbody>
+    </table>
+
+    <h3>🔄 모달 공통 동작</h3>
+    <table class="flow-table">
+        <thead><tr><th>동작</th><th>설명</th></tr></thead>
+        <tbody>
+            <tr><td>ESC 키</td><td>현재 열린 모달/풀스크린 닫기 (가장 위에 있는 것부터)</td></tr>
+            <tr><td>오버레이 (바깥 어두운 영역) 클릭</td><td>일반 모달 닫기 (풀스크린은 해당 없음)</td></tr>
+            <tr><td>✕ 닫기 버튼</td><td>모달 닫기</td></tr>
+            <tr><td>← 돌아가기 (풀스크린)</td><td>풀스크린 닫기 → 이전 화면으로 복귀</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ===== 헤더 ===== -->
+<div class="header">
+    <div class="header-left">
+        <a class="logo" data-spec onclick="closeAll()">
+            <div class="logo-icon">N</div>놀이터
+            <div class="spec-note" style="top:50px;left:0">클릭 → 모든 모달 닫기, 홈으로 복귀</div>
+        </a>
+        <nav class="nav">
+            <a class="active" data-spec onclick="closeAll()">홈
+                <div class="spec-note" style="top:40px;left:0">클릭 → 모든 모달 닫기</div>
+            </a>
+            <a data-spec onclick="openModal('projectsModal')">내 프로젝트
+                <div class="spec-note" style="top:40px;left:0">클릭 → 프로젝트 목록 모달<br>API: GET /api/projects</div>
+            </a>
+            <a data-spec onclick="openModal('auditModal')">감사 로그
+                <div class="spec-note" style="top:40px;left:0">클릭 → 감사 로그 모달<br>API: GET /api/audit-logs</div>
+            </a>
+            <a data-spec onclick="openModal('settingsModal')">설정
+                <div class="spec-note" style="top:40px;left:0">클릭 → 설정 모달<br>API: GET /api/settings/api-key</div>
+            </a>
+        </nav>
+    </div>
+    <div class="header-right">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);position:relative" data-spec>
+            <span class="status-dot"></span> 시스템 정상
+            <div class="spec-note" style="top:30px;right:0">앱 로드 시 자동 호출<br>API: GET /api/health</div>
+        </div>
+        <button class="theme-toggle" data-spec>🌙
+            <div class="spec-note" style="top:40px;right:0">클릭 → 라이트/다크 테마 토글<br>CSS 변수 교체 방식</div>
+        </button>
+    </div>
+</div>
+
+<!-- ===== 홈 ===== -->
+<div id="homePage">
+    <section class="hero">
+        <div class="hero-badge">✨ AI 멀티 에이전트 게임 스튜디오</div>
+        <h1>요구사항 하나면,<br><span>AI가 게임을 만들어드립니다</span></h1>
+        <p>6개의 AI 에이전트가 기획부터 구현, 테스트까지.<br>당신만의 미니게임을 몇 분 만에 완성하세요.</p>
+        <div class="hero-actions">
+            <button class="btn-hero btn-hero-primary" data-spec onclick="openModal('createModal')">🎮 게임 생성
+                <div class="spec-note" style="top:-50px;left:50%;transform:translateX(-50%)">클릭 → 게임 생성 모달 열기</div>
+            </button>
+            <a href="#playground" class="btn-hero btn-hero-secondary" data-spec>↓ 게임 둘러보기
+                <div class="spec-note" style="top:-40px;left:50%;transform:translateX(-50%)">클릭 → 플레이그라운드로 스크롤</div>
+            </a>
+        </div>
+    </section>
+
+    <section class="studio-section">
+        <div class="studio-inner">
+            <div class="section-label">AI Game Studio</div>
+            <div class="section-heading">6개의 전문 AI 에이전트가 협업합니다</div>
+            <div class="agent-cards">
+                <div class="agent-card"><div class="agent-icon" style="background:rgba(174,62,201,0.1);color:var(--agent-planning)">📋</div><div class="agent-name" style="color:var(--agent-planning)">기획팀</div><div class="agent-desc">게임 기획서 작성</div></div>
+                <div class="agent-card"><div class="agent-icon" style="background:rgba(66,99,235,0.1);color:var(--agent-cto)">👔</div><div class="agent-name" style="color:var(--agent-cto)">CTO</div><div class="agent-desc">기술 아키텍처 결정</div></div>
+                <div class="agent-card"><div class="agent-icon" style="background:rgba(230,73,128,0.1);color:var(--agent-design)">🎨</div><div class="agent-name" style="color:var(--agent-design)">디자인팀</div><div class="agent-desc">UI/UX 디자인</div></div>
+                <div class="agent-card"><div class="agent-icon" style="background:rgba(12,166,120,0.1);color:var(--agent-frontend)">🖥️</div><div class="agent-name" style="color:var(--agent-frontend)">프론트팀</div><div class="agent-desc">화면·인터랙션 구현</div></div>
+                <div class="agent-card"><div class="agent-icon" style="background:rgba(230,119,0,0.1);color:var(--agent-backend)">⚙️</div><div class="agent-name" style="color:var(--agent-backend)">백엔드팀</div><div class="agent-desc">게임 로직 구현</div></div>
+                <div class="agent-card"><div class="agent-icon" style="background:rgba(247,103,7,0.1);color:var(--agent-qa)">🔍</div><div class="agent-name" style="color:var(--agent-qa)">QA팀</div><div class="agent-desc">테스트·품질 보증</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="playground" id="playground">
+        <div class="playground-header">
+            <div>
+                <div class="section-label">Playground</div>
+                <div class="section-heading" style="margin-bottom:0">플레이그라운드</div>
+                <div class="playground-sub">AI가 만든 게임을 바로 플레이해보세요</div>
+            </div>
+            <button class="btn-hero btn-hero-primary" style="padding:10px 24px;font-size:14px;position:relative" data-spec onclick="openModal('createModal')">+ 새 게임 만들기
+                <div class="spec-note" style="top:-40px;right:0">클릭 → 게임 생성 모달</div>
+            </button>
+        </div>
+        <div class="game-grid">
+            <div class="game-card" data-spec>
+                <div class="game-thumbnail" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">🧛</div>
+                <div class="game-info">
+                    <span class="game-genre" style="background:rgba(250,82,82,0.1);color:var(--danger)">액션</span>
+                    <div class="game-name">뱀파이어 서바이벌</div>
+                    <div class="game-desc">사방에서 몰려오는 몬스터를 피하며 자동 공격으로 처치하는 서바이벌 게임</div>
+                    <div class="game-footer">
+                        <span class="game-date">3분 전</span>
+                        <button class="btn-play" data-spec>플레이 ▶
+                            <div class="spec-note" style="bottom:40px;right:0;white-space:nowrap">클릭 → 게임 iframe 팝업<br>API: GET /api/projects/{id}/preview</div>
+                        </button>
+                    </div>
+                </div>
+                <div class="spec-note" style="top:10px;left:10px">카드 영역 클릭 → 풀스크린 상세 모달<br>API: GET /api/projects/{id}</div>
+            </div>
+            <div class="game-card"><div class="game-thumbnail" style="background:linear-gradient(135deg,#0f3460,#16213e)">🧱</div><div class="game-info"><span class="game-genre" style="background:rgba(51,154,240,0.1);color:var(--info)">퍼즐</span><div class="game-name">테트리스 클론</div><div class="game-desc">떨어지는 블록을 회전하고 쌓아 줄을 완성하는 클래식 퍼즐 게임</div><div class="game-footer"><span class="game-date">25분 전</span><button class="btn-play">플레이 ▶</button></div></div></div>
+            <div class="game-card game-card-empty" data-spec onclick="openModal('createModal')"><div class="empty-icon">✨</div><div class="empty-text">나만의 게임 만들기</div><div class="empty-hint">AI에게 원하는 게임을 설명해보세요</div>
+                <div class="spec-note" style="bottom:10px;left:10px">클릭 → 게임 생성 모달</div>
+            </div>
+        </div>
+    </section>
+    <div class="footer">놀이터 NoriTer — AI 멀티 에이전트 기반 미니게임 자동 개발 플랫폼</div>
+</div>
+
+<script>
+function toggleSpecMode() {
+    document.body.classList.toggle('spec-mode');
+    const btn = document.getElementById('specToggle');
+    if (document.body.classList.contains('spec-mode')) {
+        btn.textContent = '📋 화면정의서 모드 OFF';
+        btn.classList.add('active');
+    } else {
+        btn.textContent = '📋 화면정의서 모드 ON';
+        btn.classList.remove('active');
+    }
+}
+function openModal(id) { document.getElementById(id)?.classList.add('active'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('active'); }
+function closeAll() { document.querySelectorAll('.modal-overlay,.fullscreen-overlay').forEach(m=>m.classList.remove('active')); }
+function selectGenre(el) { document.querySelectorAll('.genre-tag').forEach(t=>t.classList.remove('selected')); el.classList.add('selected'); }
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeAll();});
+</script>
+</body>
+</html>

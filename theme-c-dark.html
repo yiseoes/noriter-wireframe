@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>놀이터 NoriTer — 테마 C (다크+컬러풀)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 기본 컬러 */
+            --bg-primary: #0f1117;
+            --bg-secondary: #1a1d27;
+            --bg-tertiary: #242836;
+            --bg-hover: #2d3244;
+            --border: #333848;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0ad;
+            --text-muted: #6b7280;
+
+            /* 브랜드 컬러 */
+            --brand: #6c5ce7;
+            --brand-light: #a29bfe;
+
+            /* 상태 컬러 */
+            --success: #00d68f;
+            --warning: #ffaa00;
+            --danger: #ff6b6b;
+            --info: #339af0;
+
+            /* 에이전트 컬러 (6개 부서) */
+            --agent-cto: #748ffc;
+            --agent-planning: #da77f2;
+            --agent-design: #f06595;
+            --agent-frontend: #38d9a9;
+            --agent-backend: #ffd43b;
+            --agent-qa: #ff922b;
+            --agent-system: #868e96;
+
+            /* 로그 레벨 컬러 */
+            --log-info: #868e96;
+            --log-agent: #da77f2;
+            --log-warn: #ffaa00;
+            --log-error: #ff6b6b;
+            --log-audit: #339af0;
+            --log-debug: #495057;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans KR', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* ===== 헤더 (GNB) ===== */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--brand-light);
+            text-decoration: none;
+        }
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--brand);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .nav { display: flex; gap: 4px; }
+        .nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s;
+        }
+        .nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .nav a.active { background: var(--bg-tertiary); color: var(--brand-light); }
+        .status-dot {
+            width: 8px; height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* ===== 메인 ===== */
+        .main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        /* ===== 홈 — 게임 생성 요청 ===== */
+        .hero {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--brand-light), var(--agent-design));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+        .form-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 640px;
+            margin: 32px auto;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--brand);
+        }
+        .form-textarea { min-height: 120px; resize: vertical; }
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .genre-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .genre-tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .genre-tag:hover { border-color: var(--brand); color: var(--brand-light); }
+        .genre-tag.selected {
+            background: var(--brand);
+            border-color: var(--brand);
+            color: white;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: var(--brand);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-primary:hover { background: #5f4dd0; }
+
+        /* ===== 프로젝트 카드 ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        .project-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .project-card:hover {
+            border-color: var(--brand);
+            transform: translateY(-2px);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-progress { background: rgba(51,154,240,0.15); color: var(--info); }
+        .badge-completed { background: rgba(0,214,143,0.15); color: var(--success); }
+        .badge-failed { background: rgba(255,107,107,0.15); color: var(--danger); }
+        .badge-cancelled { background: rgba(134,142,150,0.15); color: var(--text-muted); }
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            margin: 12px 0 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--brand), var(--brand-light));
+            transition: width 0.3s;
+        }
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== 파이프라인 타임라인 ===== */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 24px 0;
+        }
+        .pipeline-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        .pipeline-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            background: var(--bg-secondary);
+            z-index: 1;
+        }
+        .pipeline-dot.completed { border-color: var(--success); background: rgba(0,214,143,0.15); color: var(--success); }
+        .pipeline-dot.active { border-color: var(--info); background: rgba(51,154,240,0.15); color: var(--info); animation: pulse 2s infinite; }
+        .pipeline-dot.pending { border-color: var(--border); color: var(--text-muted); }
+        .pipeline-dot.failed { border-color: var(--danger); background: rgba(255,107,107,0.15); color: var(--danger); }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(51,154,240,0.3); }
+            50% { box-shadow: 0 0 0 8px rgba(51,154,240,0); }
+        }
+        .pipeline-line {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+        .pipeline-line.completed { background: var(--success); }
+        .pipeline-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        /* ===== 탭 ===== */
+        .tabs {
+            display: flex;
+            gap: 2px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 3px;
+            margin: 20px 0;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .tab:hover { color: var(--text-primary); }
+        .tab.active { background: var(--bg-tertiary); color: var(--brand-light); }
+
+        /* ===== 로그 패널 ===== */
+        .log-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-entry {
+            padding: 6px 0;
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+        .log-time { color: var(--text-muted); white-space: nowrap; }
+        .log-level {
+            font-weight: 600;
+            min-width: 50px;
+        }
+        .log-agent {
+            min-width: 60px;
+            font-weight: 500;
+        }
+        .log-msg { color: var(--text-primary); }
+
+        /* ===== 에이전트 대화 (채팅) ===== */
+        .chat-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .chat-msg { display: flex; gap: 12px; margin-bottom: 20px; }
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .chat-bubble {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 12px 16px;
+            max-width: 80%;
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .chat-name { font-weight: 600; font-size: 13px; }
+        .chat-type {
+            font-size: 11px;
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        .chat-text { font-size: 14px; color: var(--text-secondary); }
+        .chat-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+        /* ===== 에이전트 아바타 컬러 ===== */
+        .avatar-cto { background: rgba(116,143,252,0.2); color: var(--agent-cto); }
+        .avatar-planning { background: rgba(218,119,242,0.2); color: var(--agent-planning); }
+        .avatar-design { background: rgba(240,101,149,0.2); color: var(--agent-design); }
+        .avatar-frontend { background: rgba(56,217,169,0.2); color: var(--agent-frontend); }
+        .avatar-backend { background: rgba(255,212,59,0.2); color: var(--agent-backend); }
+        .avatar-qa { background: rgba(255,146,43,0.2); color: var(--agent-qa); }
+
+        /* ===== 필터 바 ===== */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .filter-btn.active { background: var(--brand); border-color: var(--brand); color: white; }
+
+        /* ===== 설정 ===== */
+        .settings-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .settings-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+        .health-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+        .health-label { color: var(--text-secondary); min-width: 120px; }
+        .btn-secondary {
+            padding: 8px 16px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { background: var(--bg-hover); }
+
+        /* ===== 섹션 구분 ===== */
+        .section { margin-bottom: 48px; }
+        .section-label {
+            font-size: 12px;
+            color: var(--brand-light);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 48px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== 헤더 ===== -->
+<div class="header">
+    <div class="header-left">
+        <a href="#" class="logo">
+            <div class="logo-icon">N</div>
+            놀이터
+        </a>
+        <nav class="nav">
+            <a href="#home" class="active">홈</a>
+            <a href="#projects">프로젝트</a>
+            <a href="#audit">감사 로그</a>
+            <a href="#settings">설정</a>
+        </nav>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary)">
+        <span class="status-dot"></span> 시스템 정상
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- ===== SCR-PRJ-001: 홈 (게임 생성 요청) ===== -->
+    <div class="section" id="home">
+        <div class="section-label">SCR-PRJ-001 — 게임 생성 요청</div>
+        <div class="hero">
+            <h1>놀이터 NoriTer</h1>
+            <p>요구사항 하나면, AI가 게임을 만들어드립니다.</p>
+        </div>
+        <div class="form-card">
+            <div class="form-group">
+                <label class="form-label">프로젝트명 (선택)</label>
+                <input class="form-input" placeholder="뱀파이어 서바이벌" value="뱀파이어 서바이벌">
+            </div>
+            <div class="form-group">
+                <label class="form-label">게임 장르 (선택)</label>
+                <div class="genre-tags">
+                    <span class="genre-tag">퍼즐</span>
+                    <span class="genre-tag selected">액션</span>
+                    <span class="genre-tag">아케이드</span>
+                    <span class="genre-tag">슈팅</span>
+                    <span class="genre-tag">전략</span>
+                    <span class="genre-tag">기타</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">요구사항 *</label>
+                <textarea class="form-textarea" placeholder="어떤 게임을 만들고 싶으신가요?">뱀파이어 서바이벌 류 미니게임을 만들어줘. 사방에서 몬스터가 몰려오고 자동 공격으로 처치하는 게임</textarea>
+                <div class="form-hint" style="display:flex;justify-content:space-between">
+                    <span>최소 10자 이상 입력해주세요</span>
+                    <span style="color:var(--success)">52/10 ✓</span>
+                </div>
+            </div>
+            <button class="btn-primary">🎮 게임 생성 요청</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== SCR-PRJ-002: 프로젝트 목록 ===== -->
+    <div class="section" id="projects">
+        <div class="section-label">SCR-PRJ-002 — 프로젝트 목록</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <h2 class="page-title">프로젝트</h2>
+            <button class="btn-primary" style="width:auto;padding:10px 20px">+ 새 게임 만들기</button>
+        </div>
+        <div class="filter-bar">
+            <button class="filter-btn active">전체</button>
+            <button class="filter-btn">진행중</button>
+            <button class="filter-btn">완료</button>
+            <button class="filter-btn">실패</button>
+            <button class="filter-btn">취소</button>
+        </div>
+        <div class="card-grid">
+            <div class="project-card">
+                <div class="card-header">
+                    <div class="card-title">🎮 뱀파이어 서바이벌</div>
+                    <span class="badge badge-progress">🔄 진행중</span>
+                </div>
+                <div style="font-size:13px;color:var(--text-muted)">현재: 구현 단계</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:57%"></div></div>
+                <div class="card-meta"><span>액션</span><span>3분 전</span></div>
+            </div>
+            <div class="project-card">
+                <div class="card-header">
+                    <div class="card-title">🎮 테트리스 클론</div>
+                    <span class="badge badge-completed">✓ 완료</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:100%;background:var(--success)"></div></div>
+                <div class="card-meta"><span>퍼즐</span><span>25분 전</span></div>
+            </div>
+            <div class="project-card">
+                <div class="card-header">
+                    <div class="card-title">🎮 슈팅 게임</div>
+                    <span class="badge badge-failed">✕ 실패</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:71%;background:var(--danger)"></div></div>
+                <div class="card-meta"><span>슈팅</span><span>1시간 전</span></div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== SCR-PRJ-003: 프로젝트 상세 ===== -->
+    <div class="section" id="detail">
+        <div class="section-label">SCR-PRJ-003 — 프로젝트 상세</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+                <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">← 목록으로</div>
+                <h2 style="font-size:22px;font-weight:700;margin-bottom:4px">뱀파이어 서바이벌</h2>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <span class="badge badge-progress">🔄 진행중</span>
+                    <span style="font-size:13px;color:var(--text-muted)">액션</span>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="btn-secondary">중단</button>
+            </div>
+        </div>
+
+        <!-- 파이프라인 타임라인 -->
+        <div class="pipeline">
+            <div class="pipeline-stage">
+                <div class="pipeline-dot completed">✓</div>
+                <div class="pipeline-label">기획</div>
+                <div class="pipeline-line completed"></div>
+            </div>
+            <div class="pipeline-stage">
+                <div class="pipeline-dot completed">✓</div>
+                <div class="pipeline-label">CTO</div>
+                <div class="pipeline-line completed"></div>
+            </div>
+            <div class="pipeline-stage">
+                <div class="pipeline-dot completed">✓</div>
+                <div class="pipeline-label">디자인</div>
+                <div class="pipeline-line completed"></div>
+            </div>
+            <div class="pipeline-stage">
+                <div class="pipeline-dot active">4</div>
+                <div class="pipeline-label">구현</div>
+                <div class="pipeline-line"></div>
+            </div>
+            <div class="pipeline-stage">
+                <div class="pipeline-dot pending">5</div>
+                <div class="pipeline-label">QA</div>
+                <div class="pipeline-line"></div>
+            </div>
+            <div class="pipeline-stage">
+                <div class="pipeline-dot pending">6</div>
+                <div class="pipeline-label">출시</div>
+            </div>
+        </div>
+        <div class="progress-bar" style="height:6px;border-radius:3px">
+            <div class="progress-fill" style="width:57%"></div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:var(--text-muted);margin-top:4px">57%</div>
+
+        <!-- 탭 -->
+        <div class="tabs">
+            <div class="tab active">📋 개요</div>
+            <div class="tab">📜 로그</div>
+            <div class="tab">💬 대화</div>
+            <div class="tab">🎮 미리보기</div>
+            <div class="tab">📄 소스코드</div>
+        </div>
+
+        <!-- 로그 탭 예시 -->
+        <div class="section-label" style="margin-top:20px">로그 탭 (SCR-MON-001)</div>
+        <div class="filter-bar">
+            <button class="filter-btn active">전체</button>
+            <button class="filter-btn" style="color:var(--log-info)">INFO</button>
+            <button class="filter-btn" style="color:var(--log-agent)">AGENT</button>
+            <button class="filter-btn" style="color:var(--log-warn)">WARN</button>
+            <button class="filter-btn" style="color:var(--log-error)">ERROR</button>
+        </div>
+        <div class="log-panel">
+            <div class="log-entry">
+                <span class="log-time">14:30:01</span>
+                <span class="log-level" style="color:var(--log-info)">INFO</span>
+                <span class="log-agent" style="color:var(--agent-planning)">기획팀</span>
+                <span class="log-msg">기획팀이 게임 기획서 작성을 시작합니다.</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:30:15</span>
+                <span class="log-level" style="color:var(--log-agent)">AGENT</span>
+                <span class="log-agent" style="color:var(--agent-planning)">기획팀</span>
+                <span class="log-msg">요구사항 분석 완료. 액션/서바이벌 장르로 기획서를 작성합니다.</span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:33:45</span>
+                <span class="log-level" style="color:var(--log-error)">ERROR</span>
+                <span class="log-agent" style="color:var(--agent-frontend)">프론트</span>
+                <span class="log-msg">Claude API 호출 실패: Rate Limit <span style="background:rgba(255,107,107,0.15);color:var(--danger);padding:1px 6px;border-radius:4px;font-size:11px">NT-ERR-A001</span></span>
+            </div>
+            <div class="log-entry">
+                <span class="log-time">14:33:46</span>
+                <span class="log-level" style="color:var(--log-warn)">WARN</span>
+                <span class="log-agent" style="color:var(--agent-system)">시스템</span>
+                <span class="log-msg">API 응답 지연 감지 (3.2초) — 자동 재시도 중...</span>
+            </div>
+        </div>
+
+        <!-- 대화 탭 예시 -->
+        <div class="section-label" style="margin-top:32px">대화 탭 (SCR-MON-002)</div>
+        <div class="chat-panel">
+            <div class="chat-msg">
+                <div class="chat-avatar avatar-planning">📋</div>
+                <div class="chat-bubble">
+                    <div class="chat-header">
+                        <span class="chat-name" style="color:var(--agent-planning)">기획팀</span>
+                        <span>→</span>
+                        <span class="chat-name" style="color:var(--agent-cto)">CTO</span>
+                        <span class="chat-type" style="background:rgba(51,154,240,0.15);color:var(--info)">HANDOFF</span>
+                    </div>
+                    <div class="chat-text">게임 기획서 작성을 완료했습니다. 검토 부탁드립니다.</div>
+                    <div style="margin-top:6px;font-size:12px;color:var(--brand-light)">📎 plan.json (v1)</div>
+                    <div class="chat-time">14:31:15</div>
+                </div>
+            </div>
+            <div class="chat-msg">
+                <div class="chat-avatar avatar-cto">👔</div>
+                <div class="chat-bubble">
+                    <div class="chat-header">
+                        <span class="chat-name" style="color:var(--agent-cto)">CTO</span>
+                        <span>→</span>
+                        <span class="chat-name" style="color:var(--agent-design)">디자인팀</span>
+                        <span class="chat-type" style="background:rgba(51,154,240,0.15);color:var(--info)">HANDOFF</span>
+                    </div>
+                    <div class="chat-text">아키텍처 결정 완료. Canvas 2D 기반으로 진행합니다.</div>
+                    <div style="margin-top:6px;font-size:12px;color:var(--brand-light)">📎 architecture.json (v1)</div>
+                    <div class="chat-time">14:32:00</div>
+                </div>
+            </div>
+            <div class="chat-msg">
+                <div class="chat-avatar avatar-qa">🔍</div>
+                <div class="chat-bubble">
+                    <div class="chat-header">
+                        <span class="chat-name" style="color:var(--agent-qa)">QA팀</span>
+                        <span>→</span>
+                        <span class="chat-name" style="color:var(--agent-cto)">CTO</span>
+                        <span class="chat-type" style="background:rgba(255,107,107,0.15);color:var(--danger)">BUG_REPORT</span>
+                    </div>
+                    <div class="chat-text">CRITICAL 버그 1건 발견. 몬스터 스폰 로직에 문제가 있습니다.</div>
+                    <div style="margin-top:6px;font-size:12px;color:var(--brand-light)">📎 test-report.json (v1)</div>
+                    <div class="chat-time">14:55:00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== SCR-SYS-001: 설정 ===== -->
+    <div class="section" id="settings">
+        <div class="section-label">SCR-SYS-001 — 설정</div>
+        <h2 class="page-title">설정</h2>
+
+        <div class="settings-card">
+            <div class="settings-title">Claude API 키</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+                <span class="status-dot"></span>
+                <span style="font-size:14px">설정됨</span>
+                <span style="font-size:13px;color:var(--text-muted);font-family:'JetBrains Mono',monospace">sk-ant-a********...****</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">새 API 키</label>
+                <input class="form-input" type="password" placeholder="sk-ant-api03-...">
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="btn-secondary">유효성 검증</button>
+                <button class="btn-primary" style="width:auto;padding:10px 20px">저장</button>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="settings-title">시스템 상태</div>
+            <div class="health-item">
+                <span class="health-label">서버</span>
+                <span class="status-dot"></span> <span style="font-size:13px">UP</span>
+            </div>
+            <div class="health-item">
+                <span class="health-label">데이터베이스</span>
+                <span class="status-dot"></span> <span style="font-size:13px">UP</span>
+            </div>
+            <div class="health-item">
+                <span class="health-label">Claude API</span>
+                <span class="status-dot"></span> <span style="font-size:13px">UP (설정됨)</span>
+            </div>
+            <div class="health-item">
+                <span class="health-label">활성 파이프라인</span>
+                <span style="font-size:13px;color:var(--text-primary)">1개</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 컬러 팔레트 참조 ===== -->
+    <div class="section">
+        <div class="section-label">컬러 팔레트 참조</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px">
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--brand);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Brand<br>#6c5ce7</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--agent-cto);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">CTO<br>#748ffc</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--agent-planning);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">기획팀<br>#da77f2</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--agent-design);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">디자인<br>#f06595</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--agent-frontend);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">프론트<br>#38d9a9</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--agent-backend);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">백엔드<br>#ffd43b</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--agent-qa);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">QA<br>#ff922b</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--success);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">성공<br>#00d68f</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--danger);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">에러<br>#ff6b6b</div>
+            </div>
+            <div style="text-align:center">
+                <div style="width:60px;height:60px;background:var(--warning);border-radius:8px"></div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px">경고<br>#ffaa00</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
