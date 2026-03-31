@@ -1747,15 +1747,16 @@ document.addEventListener('keydown',e=>{
     if(!container) return;
     const emojis = ['🎮','🧩','🚀','⭐','🎨','🎵','🎲','✨','🎯','🕹️','👾','🎪','🧸','🎠','🎡','💫'];
     const particles = [];
-    const COUNT = 15;
+    const COUNT = 12;
+    const sizes = [14,16,18,20,24,26,28,32,36,40,44,48];
 
     for(let i=0;i<COUNT;i++){
         const el = document.createElement('span');
         el.className = 'floating-emoji';
         el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-        const size = 18 + Math.random()*28;
+        const size = sizes[i % sizes.length];
         el.style.fontSize = size+'px';
-        el.style.opacity = 0.15 + Math.random()*0.35;
+        el.style.opacity = size < 24 ? 0.2 + Math.random()*0.15 : 0.3 + Math.random()*0.25;
         container.appendChild(el);
 
         particles.push({
