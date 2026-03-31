@@ -116,7 +116,7 @@
             animation:inlineEmojiBounce 2s ease-in-out 1.2s infinite;
         }
         @keyframes inlineEmojiBounce{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-8px) rotate(-8deg);}75%{transform:translateY(-4px) rotate(6deg);}}
-        .hero h1 span{background:linear-gradient(135deg,var(--agent-planning),var(--agent-cto),var(--agent-design));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:gradientShift 4s ease infinite;}
+        .hero h1 span{background:linear-gradient(135deg,#ff6b6b,#ff922b,#e64980);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:gradientShift 4s ease infinite;}
         @keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
 
         /* 설명: 우에서 슬라이드 */
@@ -1250,7 +1250,7 @@
     <section class="playground" id="playground">
         <div class="playground-header">
             <div><div class="section-label reveal">Playground</div><div class="section-heading reveal" style="margin-bottom:0">놀이터 🎡</div><div class="playground-sub">AI 친구들이 만든 게임을 바로 플레이해보세요!</div></div>
-            <button class="btn-hero btn-hero-primary" style="padding:10px 24px;font-size:14px;position:relative" data-spec onclick="openModal('createModal')">+ 나도 만들어보기<div class="spec-note" style="top:-35px;right:0">→ 게임 생성 모달</div></button>
+            <button class="btn-hero btn-hero-primary" style="padding:10px 24px;font-size:14px;position:relative" data-spec onclick="openModal('createModal')">+ 나도 만들래!<div class="spec-note" style="top:-35px;right:0">→ 게임 생성 모달</div></button>
         </div>
         <div class="game-grid">
             <div class="game-card reveal delay-1" data-spec onclick="openSlideup()">
