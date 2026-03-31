@@ -12,6 +12,7 @@
             --text-primary:#212529;--text-secondary:#495057;--text-muted:#868e96;
             --brand:#6c5ce7;--brand-light:#7c6ef0;--brand-bg:#f3f1ff;
             --brand-gradient:linear-gradient(135deg,#6c5ce7,#a29bfe);
+            --coral:#ff6b6b;--coral-light:#ff8787;--coral-bg:#fff5f5;
             --success:#12b886;--success-bg:#e6fcf5;--warning:#f59f00;--warning-bg:#fff9db;
             --danger:#fa5252;--danger-bg:#fff5f5;--info:#339af0;--info-bg:#e7f5ff;
             --agent-cto:#4263eb;--agent-cto-bg:#edf2ff;
@@ -73,7 +74,7 @@
         .nav{display:flex;gap:4px;}
         .nav a{color:var(--text-secondary);text-decoration:none;padding:8px 16px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;position:relative;}
         .nav a:hover{background:var(--bg-tertiary);color:var(--text-primary);}
-        .nav a.active{background:var(--brand-bg);color:var(--brand);}
+        .nav a.active{background:var(--coral-bg);color:var(--coral);}
         .header-right{display:flex;align-items:center;gap:12px;}
         .status-dot{width:8px;height:8px;background:var(--success);border-radius:50%;display:inline-block;}
         .theme-toggle{width:36px;height:36px;border-radius:8px;border:1px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;position:relative;}
@@ -316,7 +317,7 @@
         .tabs{display:flex;gap:2px;background:var(--bg-tertiary);border-radius:10px;padding:3px;margin:20px 0;}
         .tab{flex:1;padding:10px;text-align:center;border-radius:8px;font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;}
         .tab:hover{color:var(--text-primary);}
-        .tab.active{background:var(--bg-primary);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+        .tab.active{background:var(--bg-primary);color:var(--coral);box-shadow:0 1px 3px rgba(0,0,0,0.06);}
         .tab-content{display:none;}.tab-content.active{display:block;}
 
         /* 로그 */
@@ -396,7 +397,7 @@
 
         .filter-bar{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
         .filter-btn{padding:6px 14px;border-radius:6px;font-size:13px;border:1px solid var(--border-light);background:var(--bg-primary);color:var(--text-secondary);cursor:pointer;}
-        .filter-btn.active{background:var(--brand);border-color:var(--brand);color:white;}
+        .filter-btn.active{background:var(--coral);border-color:var(--coral);color:white;}
 
         /* 설정/감사 */
         .settings-card{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:12px;padding:20px;margin-bottom:16px;}
