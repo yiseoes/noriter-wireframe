@@ -28,7 +28,7 @@
         /* ===== 풀페이지 스냅 (히어로 + 에이전트까지만) ===== */
         .snap-container{
             height:100vh;overflow-y:auto;
-            scroll-snap-type:y mandatory;
+            scroll-snap-type:y proximity;
             scroll-behavior:smooth;
         }
         .snap-section{
@@ -155,7 +155,7 @@
         @keyframes arrowBounce{0%,100%{transform:rotate(45deg) translate(0,0);}50%{transform:rotate(45deg) translate(4px,4px);}}
 
         /* ===== 떠다니는 이모지 — JS 랜덤 파티클 ===== */
-        .hero-emoji-container{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+        .hero-emoji-container{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:900px;pointer-events:none;z-index:0;overflow:hidden;}
         .floating-emoji{position:absolute;pointer-events:none;will-change:transform;transition:none;}
 
         /* 스튜디오 — 놀이터 톤 */
