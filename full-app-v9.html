@@ -25,6 +25,22 @@
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;}
 
+        /* ===== 풀페이지 스냅 (히어로 + 에이전트까지만) ===== */
+        .snap-container{
+            height:100vh;overflow-y:auto;
+            scroll-snap-type:y mandatory;
+            scroll-behavior:smooth;
+        }
+        .snap-section{
+            min-height:100vh;
+            scroll-snap-align:start;
+            display:flex;flex-direction:column;justify-content:center;
+        }
+        /* 플레이그라운드부터는 스냅 해제 — 자유 스크롤 */
+        .snap-free{
+            scroll-snap-align:none;
+        }
+
         /* 정의서 모드 */
         .spec-toggle{position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 24px;border-radius:12px;background:var(--spec-bg);border:2px solid var(--spec-border);color:var(--spec-text);font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
         .spec-toggle.active{background:var(--spec-text);color:white;border-color:var(--spec-text);}
@@ -60,7 +76,7 @@
         .theme-toggle{width:36px;height:36px;border-radius:8px;border:1px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;position:relative;}
 
         /* ===== 히어로 — 놀이터 인터랙션 풀버전 ===== */
-        .hero{padding:160px 32px 100px;text-align:center;position:relative;overflow:hidden;}
+        .hero{padding:60px 32px;text-align:center;position:relative;overflow:hidden;}
         .hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(108,92,231,0.08) 0%,transparent 70%);pointer-events:none;}
 
         /* 뱃지: 위에서 통통 떨어짐 */
@@ -118,6 +134,20 @@
         .btn-hero-primary:hover{transform:translateY(-4px) scale(1.05) rotate(-1deg);box-shadow:0 12px 30px rgba(108,92,231,0.4);}
         .btn-hero-secondary{background:var(--bg-primary);color:var(--text-primary);border:2px solid var(--border-light);border-radius:20px;}
         .btn-hero-secondary:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-3px) scale(1.03) rotate(1deg);}
+
+        /* 스크롤 힌트 화살표 */
+        .scroll-hint{
+            position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+            display:flex;flex-direction:column;align-items:center;gap:4px;
+            color:var(--text-muted);font-size:12px;letter-spacing:1px;
+            opacity:0;animation:hintAppear 0.6s ease 2.5s both;
+        }
+        .scroll-hint-arrow{
+            width:24px;height:24px;border-right:2px solid var(--brand);border-bottom:2px solid var(--brand);
+            transform:rotate(45deg);animation:arrowBounce 1.5s ease-in-out infinite;
+        }
+        @keyframes hintAppear{from{opacity:0;transform:translateX(-50%) translateY(10px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+        @keyframes arrowBounce{0%,100%{transform:rotate(45deg) translate(0,0);}50%{transform:rotate(45deg) translate(4px,4px);}}
 
         /* ===== 떠다니는 이모지 — JS 랜덤 파티클 ===== */
         .hero-emoji-container{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
@@ -372,6 +402,10 @@
 
         /* ===== 모바일 반응형 (max-width: 768px) ===== */
         @media (max-width: 768px) {
+            /* 풀페이지 스냅 모바일 */
+            .snap-section { min-height: calc(100vh - 52px); }
+            .scroll-hint { bottom: 20px; }
+
             /* 헤더 */
             .header { padding: 0 16px; height: 52px; }
             .header-left { gap: 12px; }
@@ -1164,8 +1198,8 @@
 </div>
 
 <!-- ===== 홈 ===== -->
-<div id="homePage">
-    <section class="hero">
+<div id="homePage" class="snap-container">
+    <section class="hero snap-section">
         <div class="hero-glow hero-glow-1"></div>
         <div class="hero-glow hero-glow-2"></div>
         <div class="hero-glow hero-glow-3"></div>
@@ -1182,9 +1216,13 @@
                 <div class="spec-note" style="top:-35px;left:50%;transform:translateX(-50%)">→ 플레이그라운드 스크롤</div>
             </a>
         </div>
+        <div class="scroll-hint">
+            <span>스크롤</span>
+            <div class="scroll-hint-arrow"></div>
+        </div>
     </section>
 
-    <section class="studio-section">
+    <section class="studio-section snap-section">
         <div class="studio-inner">
             <div class="section-label reveal">Meet the Crew</div>
             <div class="section-heading reveal">6명의 AI 친구들을 소개할게요 👋</div>
@@ -1199,7 +1237,7 @@
         </div>
     </section>
 
-    <section class="playground" id="playground">
+    <section class="playground snap-free" id="playground">
         <div class="playground-header">
             <div><div class="section-label reveal">Playground</div><div class="section-heading reveal" style="margin-bottom:0">놀이터 🎡</div><div class="playground-sub">AI 친구들이 만든 게임을 바로 플레이해보세요!</div></div>
             <button class="btn-hero btn-hero-primary" style="padding:10px 24px;font-size:14px;position:relative" data-spec onclick="openModal('createModal')">+ 나도 만들어보기<div class="spec-note" style="top:-35px;right:0">→ 게임 생성 모달</div></button>
