@@ -59,33 +59,84 @@
         .status-dot{width:8px;height:8px;background:var(--success);border-radius:50%;display:inline-block;}
         .theme-toggle{width:36px;height:36px;border-radius:8px;border:1px solid var(--border-light);background:var(--bg-primary);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;position:relative;}
 
-        /* 히어로 — 놀이터 톤 */
-        .hero{padding:140px 32px 80px;text-align:center;position:relative;overflow:hidden;}
+        /* ===== 히어로 — 놀이터 인터랙션 풀버전 ===== */
+        .hero{padding:160px 32px 100px;text-align:center;position:relative;overflow:hidden;}
         .hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(108,92,231,0.08) 0%,transparent 70%);pointer-events:none;}
-        .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:24px;background:var(--brand-bg);color:var(--brand);font-size:14px;font-weight:700;margin-bottom:24px;animation:badgePop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;}
-        @keyframes badgePop{from{opacity:0;transform:scale(0.5) rotate(-5deg);}to{opacity:1;transform:scale(1) rotate(0deg);}}
+
+        /* 뱃지: 위에서 통통 떨어짐 */
+        .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:24px;background:var(--brand-bg);color:var(--brand);font-size:14px;font-weight:700;margin-bottom:24px;
+            opacity:0;animation:badgeDrop 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.2s both, badgeWiggle 3s ease-in-out 1.5s infinite;}
+        @keyframes badgeDrop{
+            0%{opacity:0;transform:translateY(-50px) rotate(-10deg) scale(0.5);}
+            60%{opacity:1;transform:translateY(5px) rotate(3deg) scale(1.05);}
+            80%{transform:translateY(-3px) rotate(-1deg) scale(0.98);}
+            100%{opacity:1;transform:translateY(0) rotate(0deg) scale(1);}
+        }
+        @keyframes badgeWiggle{0%,100%{transform:rotate(0deg);}25%{transform:rotate(-3deg);}75%{transform:rotate(3deg);}}
+
+        /* 제목 첫줄: 좌에서 슬라이드 + 회전 */
+        .hero-line1{opacity:0;animation:slideFromLeft 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s both;}
+        @keyframes slideFromLeft{
+            0%{opacity:0;transform:translateX(-80px) rotate(-3deg);}
+            100%{opacity:1;transform:translateX(0) rotate(0deg);}
+        }
+
+        /* 제목 둘째줄: 아래에서 바운스 업 */
+        .hero-line2{opacity:0;animation:bounceUp 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.8s both;}
+        @keyframes bounceUp{
+            0%{opacity:0;transform:translateY(60px) scale(0.8);}
+            60%{opacity:1;transform:translateY(-8px) scale(1.03);}
+            80%{transform:translateY(4px) scale(0.99);}
+            100%{opacity:1;transform:translateY(0) scale(1);}
+        }
+
         .hero h1{font-size:52px;font-weight:800;line-height:1.3;margin-bottom:20px;}
         .hero h1 span{background:linear-gradient(135deg,var(--agent-planning),var(--agent-cto),var(--agent-design));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:gradientShift 4s ease infinite;}
         @keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
-        .hero p{font-size:18px;color:var(--text-secondary);max-width:480px;margin:0 auto 40px;line-height:1.8;}
-        .hero-actions{display:flex;gap:14px;justify-content:center;}
-        .btn-hero{padding:16px 36px;border-radius:20px;font-size:16px;font-weight:700;cursor:pointer;border:none;text-decoration:none;position:relative;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-        .btn-hero-primary{background:var(--brand-gradient);color:white;box-shadow:0 6px 20px rgba(108,92,231,0.3);}
-        .btn-hero-primary:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 10px 30px rgba(108,92,231,0.4);}
-        .btn-hero-secondary{background:var(--bg-primary);color:var(--text-primary);border:2px solid var(--border-light);border-radius:20px;}
-        .btn-hero-secondary:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-2px);}
 
-        /* 히어로 떠다니는 이모지들 */
-        .hero-emoji{position:absolute;font-size:32px;pointer-events:none;opacity:0.5;z-index:0;}
-        .hero-emoji:nth-child(1){top:15%;left:8%;animation:emojiFloat1 6s ease-in-out infinite;}
-        .hero-emoji:nth-child(2){top:20%;right:10%;animation:emojiFloat2 7s ease-in-out 1s infinite;}
-        .hero-emoji:nth-child(3){bottom:25%;left:12%;animation:emojiFloat3 5s ease-in-out 0.5s infinite;}
-        .hero-emoji:nth-child(4){bottom:20%;right:8%;animation:emojiFloat1 8s ease-in-out 2s infinite;}
-        .hero-emoji:nth-child(5){top:35%;left:3%;animation:emojiFloat2 6.5s ease-in-out 1.5s infinite;}
-        .hero-emoji:nth-child(6){top:30%;right:5%;animation:emojiFloat3 7.5s ease-in-out 0.8s infinite;}
-        @keyframes emojiFloat1{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-18px) rotate(10deg);}}
-        @keyframes emojiFloat2{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-14px) rotate(-8deg);}}
-        @keyframes emojiFloat3{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-20px) rotate(12deg);}}
+        /* 설명: 우에서 슬라이드 */
+        .hero p{font-size:18px;color:var(--text-secondary);max-width:480px;margin:0 auto 40px;line-height:1.8;
+            opacity:0;animation:slideFromRight 0.7s cubic-bezier(0.16,1,0.3,1) 1.1s both;}
+        @keyframes slideFromRight{
+            0%{opacity:0;transform:translateX(60px);}
+            100%{opacity:1;transform:translateX(0);}
+        }
+
+        /* 버튼: 아래에서 통통 순차 등장 */
+        .hero-actions{display:flex;gap:14px;justify-content:center;}
+        .btn-hero{padding:16px 36px;border-radius:20px;font-size:16px;font-weight:700;cursor:pointer;border:none;text-decoration:none;position:relative;
+            transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            opacity:0;animation:btnPopUp 0.6s cubic-bezier(0.34,1.56,0.64,1) both;}
+        .btn-hero:nth-child(1){animation-delay:1.4s;}
+        .btn-hero:nth-child(2){animation-delay:1.6s;}
+        @keyframes btnPopUp{
+            0%{opacity:0;transform:translateY(40px) scale(0.7);}
+            60%{opacity:1;transform:translateY(-5px) scale(1.05);}
+            100%{opacity:1;transform:translateY(0) scale(1);}
+        }
+        .btn-hero-primary{background:var(--brand-gradient);color:white;box-shadow:0 6px 20px rgba(108,92,231,0.3);}
+        .btn-hero-primary:hover{transform:translateY(-4px) scale(1.05) rotate(-1deg);box-shadow:0 12px 30px rgba(108,92,231,0.4);}
+        .btn-hero-secondary{background:var(--bg-primary);color:var(--text-primary);border:2px solid var(--border-light);border-radius:20px;}
+        .btn-hero-secondary:hover{border-color:var(--brand);color:var(--brand);transform:translateY(-3px) scale(1.03) rotate(1deg);}
+
+        /* ===== 떠다니는 이모지 — 더 크고 활발하게 ===== */
+        .hero-emoji{position:absolute;pointer-events:none;z-index:0;opacity:0;}
+        .hero-emoji:nth-child(1){font-size:42px;top:12%;left:6%;animation:emojiFly1 8s ease-in-out 0.5s infinite, emojiAppear 0.6s ease 0.3s both;}
+        .hero-emoji:nth-child(2){font-size:36px;top:18%;right:8%;animation:emojiFly2 7s ease-in-out 1s infinite, emojiAppear 0.6s ease 0.5s both;}
+        .hero-emoji:nth-child(3){font-size:30px;bottom:22%;left:10%;animation:emojiFly3 9s ease-in-out 0.5s infinite, emojiAppear 0.6s ease 0.7s both;}
+        .hero-emoji:nth-child(4){font-size:38px;bottom:18%;right:6%;animation:emojiFly4 6s ease-in-out 2s infinite, emojiAppear 0.6s ease 0.9s both;}
+        .hero-emoji:nth-child(5){font-size:28px;top:40%;left:2%;animation:emojiFly5 10s ease-in-out 1.5s infinite, emojiAppear 0.6s ease 1.1s both;}
+        .hero-emoji:nth-child(6){font-size:34px;top:35%;right:4%;animation:emojiFly6 7.5s ease-in-out 0.8s infinite, emojiAppear 0.6s ease 1.3s both;}
+        .hero-emoji:nth-child(7){font-size:24px;top:55%;left:15%;animation:emojiFly2 8.5s ease-in-out 3s infinite, emojiAppear 0.6s ease 1.5s both;}
+        .hero-emoji:nth-child(8){font-size:32px;top:8%;left:45%;animation:emojiFly3 11s ease-in-out 2s infinite, emojiAppear 0.6s ease 0.4s both;}
+
+        @keyframes emojiAppear{from{opacity:0;transform:scale(0) rotate(-30deg);}to{opacity:0.6;transform:scale(1) rotate(0deg);}}
+        @keyframes emojiFly1{0%,100%{transform:translate(0,0) rotate(0deg);}25%{transform:translate(15px,-20px) rotate(12deg);}50%{transform:translate(-10px,-35px) rotate(-8deg);}75%{transform:translate(20px,-15px) rotate(15deg);}}
+        @keyframes emojiFly2{0%,100%{transform:translate(0,0) rotate(0deg);}25%{transform:translate(-20px,-15px) rotate(-10deg);}50%{transform:translate(10px,-30px) rotate(8deg);}75%{transform:translate(-15px,-10px) rotate(-12deg);}}
+        @keyframes emojiFly3{0%,100%{transform:translate(0,0) rotate(0deg);}33%{transform:translate(25px,-25px) rotate(15deg);}66%{transform:translate(-15px,-40px) rotate(-10deg);}}
+        @keyframes emojiFly4{0%,100%{transform:translate(0,0) rotate(0deg);}50%{transform:translate(-20px,-30px) rotate(18deg);}}
+        @keyframes emojiFly5{0%,100%{transform:translate(0,0) rotate(0deg);}25%{transform:translate(10px,-20px) rotate(-8deg);}75%{transform:translate(-10px,-15px) rotate(10deg);}}
+        @keyframes emojiFly6{0%,100%{transform:translate(0,0) rotate(0deg);}30%{transform:translate(-15px,-25px) rotate(12deg);}70%{transform:translate(15px,-20px) rotate(-15deg);}}
 
         /* 스튜디오 — 놀이터 톤 */
         .studio-section{padding:60px 32px;background:var(--bg-secondary);}
@@ -1140,8 +1191,10 @@
         <span class="hero-emoji">⭐</span>
         <span class="hero-emoji">🎨</span>
         <span class="hero-emoji">🎵</span>
+        <span class="hero-emoji">🎲</span>
+        <span class="hero-emoji">✨</span>
         <div class="hero-badge">🎪 놀이터에 오신 걸 환영해요!</div>
-        <h1><span>상상하면,</span><br>게임이 돼요 ✨</h1>
+        <h1><div class="hero-line1"><span>상상하면,</span></div><div class="hero-line2">게임이 돼요 ✨</div></h1>
         <p>AI 친구들이 당신의 상상을 게임으로 만들어줘요.<br>어떤 게임을 만들어볼까요?</p>
         <div class="hero-actions">
             <button class="btn-hero btn-hero-primary" data-spec onclick="openModal('createModal')">🎮 게임 만들러 가기
