@@ -159,9 +159,9 @@
         @keyframes arrowBounce{0%,100%{transform:rotate(45deg) translate(0,0);}50%{transform:rotate(45deg) translate(4px,4px);}}
 
         /* ===== 파이프라인 프리뷰 섹션 ===== */
-        .pipeline-preview{padding:60px 32px 32px;text-align:center;position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
-        .pipeline-top{flex-shrink:0;padding-top:60px;width:100%;max-width:900px;}
-        .pipeline-bottom{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:200px;position:relative;width:100%;}
+        .pipeline-preview{padding:0 32px;text-align:center;position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:60px;}
+        .pipeline-top{flex-shrink:0;width:100%;max-width:900px;}
+        .pipeline-bottom{width:100%;max-width:700px;min-height:180px;position:relative;}
         .pipeline-timeline{position:relative;max-width:900px;width:100%;margin:0 auto;}
         .pipeline-track{display:flex;justify-content:space-between;position:relative;z-index:1;}
         .pipeline-track::before{content:'';position:absolute;top:28px;left:40px;right:40px;height:3px;background:var(--border-light);border-radius:2px;z-index:0;}
