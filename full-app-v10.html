@@ -1280,18 +1280,19 @@
             </div>
         </div>
 
-        <!-- 완성 카드 -->
+        <!-- 완성 카드 — 클릭하면 프로젝트 상세 모달 -->
         <div class="pipeline-complete" id="pipelineComplete">
-            <div class="pipeline-complete-card">
+            <div class="pipeline-complete-card" style="cursor:pointer" onclick="openSlideup()">
                 <span style="font-size:40px">🎮</span>
                 <div style="text-align:left">
-                    <div style="font-size:18px;font-weight:700">게임 완성!</div>
+                    <div style="font-size:18px;font-weight:700">게임 완성! <span style="font-size:13px;font-weight:500;color:var(--coral)">클릭해서 확인하기 →</span></div>
                     <div style="font-size:14px;color:var(--text-muted)">6명의 AI 에이전트가 협업해서 게임을 만들었어요</div>
                 </div>
             </div>
-            <br>
-            <button class="pipeline-replay" onclick="replayPipeline()">↻ 다시 보기</button>
-            <button class="btn-hero btn-hero-primary" style="padding:12px 28px;font-size:14px;margin-left:8px" onclick="openModal('createModal')">🎮 30초 데모 체험하기</button>
+            <div style="margin-top:16px;display:flex;gap:8px;justify-content:center">
+                <button class="pipeline-replay" onclick="replayPipeline()">↻ 다시 보기</button>
+                <button class="btn-hero btn-hero-primary" style="padding:12px 28px;font-size:14px" onclick="openModal('createModal')">🎮 30초 데모 체험하기</button>
+            </div>
         </div>
 
         <!-- 에이전트 상세 패널 -->
@@ -1866,17 +1867,17 @@ document.addEventListener('keydown',e=>{
 
 // ===== 파이프라인 프리뷰 애니메이션 =====
 const pipelineData = [
-    {agent:'기획팀',msg:'게임 기획서를 작성하고 있어요...',done:'기획서 완성! CTO에게 전달할게요 ✨',output:'✅ 완료',
+    {agent:'기획팀',msg:'게임 기획서를 작성하고 있어요...',done:'기획서 완성! CTO에게 전달할게요 ✨',output:'📄 plan.json → 👔',
      detail:'요구사항을 분석하고 게임 기획서(plan.json)를 생성합니다.',input:'사용자 요구사항 텍스트',outputDesc:'게임 컨셉, 규칙, 목표를 담은 기획서',example:'"뱀파이어 서바이벌 류 게임" → 장르 분석 → 핵심 메커니즘 설계'},
-    {agent:'CTO',msg:'아키텍처를 설계하고 있어요...',done:'Canvas 2D 기반으로 결정! 디자인팀 부탁해요',output:'✅ 완료',
+    {agent:'CTO',msg:'아키텍처를 설계하고 있어요...',done:'Canvas 2D 기반으로 결정! 디자인팀 부탁해요',output:'📐 architecture.json → 🎨',
      detail:'기술 스택과 아키텍처를 결정합니다.',input:'기획서 (plan.json)',outputDesc:'렌더링 방식, 라이브러리, 파일 구조',example:'Canvas 2D vs WebGL 비교 → Canvas 2D 선택 → 모듈 구조 설계'},
-    {agent:'디자인팀',msg:'UI/UX 디자인을 그리고 있어요...',done:'디자인 시안 완료! 개발팀 화이팅 💪',output:'✅ 완료',
+    {agent:'디자인팀',msg:'UI/UX 디자인을 그리고 있어요...',done:'디자인 시안 완료! 개발팀 화이팅 💪',output:'🎨 design.json → 💻⚙️',
      detail:'게임 UI/UX 디자인 스펙을 생성합니다.',input:'기획서 + 아키텍처',outputDesc:'색상 팔레트, 레이아웃, 스프라이트 스펙',example:'다크 테마 + 네온 포인트 → UI 요소별 크기/색상 정의'},
-    {agent:'프론트팀',msg:'화면을 만들고 있어요...',done:'렌더링 코드 완성! 백엔드팀과 합칠게요',output:'✅ 완료',
+    {agent:'프론트팀',msg:'화면을 만들고 있어요...',done:'렌더링 코드 완성! 백엔드팀과 합칠게요',output:'🖥️ render.js → 🔗 merge',
      detail:'화면 렌더링과 인터랙션 코드를 작성합니다.',input:'디자인 스펙 + 아키텍처',outputDesc:'HTML/CSS/Canvas 렌더링 코드',example:'Canvas에 캐릭터/몬스터 그리기 + 애니메이션 루프'},
-    {agent:'백엔드팀',msg:'게임 로직을 짜고 있어요...',done:'로직 완성! 코드 합치기 완료 🎮',output:'✅ 완료',
+    {agent:'백엔드팀',msg:'게임 로직을 짜고 있어요...',done:'로직 완성! 코드 합치기 완료 🎮',output:'⚙️ game.js → 🔍 QA',
      detail:'게임 핵심 로직과 상태 관리를 구현합니다.',input:'기획서 + 아키텍처',outputDesc:'게임 로직, 충돌 감지, 점수 시스템',example:'몬스터 스폰 로직 + 자동 공격 시스템 + 레벨업 구현'},
-    {agent:'QA팀',msg:'게임을 테스트하고 있어요...',done:'테스트 통과! 게임 완성 🎉',output:'✅ 완료',
+    {agent:'QA팀',msg:'게임을 테스트하고 있어요...',done:'테스트 통과! 게임 완성 🎉',output:'✅ PASS → 🎮 출시!',
      detail:'생성된 코드를 분석하고 버그를 찾습니다.',input:'합쳐진 게임 코드',outputDesc:'테스트 리포트, 버그 목록, PASS/FAIL',example:'구문 오류 검사 → 로직 검증 → 렌더링 테스트 → PASS'},
 ];
 const nodes = document.querySelectorAll('.pipeline-node');
