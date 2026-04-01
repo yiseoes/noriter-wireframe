@@ -1252,7 +1252,7 @@
         <h1><div class="hero-line1"><span>상상하면,</span></div><div class="hero-line2">게임이 돼요 <img src="icons/놀람.png" class="hero-emoji-inline" alt="놀람"></div></h1>
         <p>AI 친구들이 당신의 상상을 게임으로 만들어줘요.<br>어떤 게임을 만들어볼까요?</p>
         <div class="hero-actions">
-            <button class="btn-hero btn-hero-primary" data-spec onclick="openModal('createModal')">🎮 30초 데모 체험하기
+            <button class="btn-hero btn-hero-primary" data-spec onclick="openDemoModal()">🎮 30초 데모 체험하기
                 <div class="spec-note" style="top:-45px;left:50%;transform:translateX(-50%)">→ 게임 생성 모달 (일반)</div>
             </button>
             <a href="#playground" class="btn-hero btn-hero-secondary" data-spec>👀 구경하기
@@ -1301,7 +1301,7 @@
                 </div>
                 <div style="margin-top:16px;display:flex;gap:8px;justify-content:center">
                     <button class="pipeline-replay" onclick="replayPipeline()">↻ 다시 보기</button>
-                    <button class="btn-hero btn-hero-primary" style="padding:12px 28px;font-size:14px" onclick="openModal('createModal')">🎮 30초 데모 체험하기</button>
+                    <button class="btn-hero btn-hero-primary" style="padding:12px 28px;font-size:14px" onclick="openDemoModal()">🎮 30초 데모 체험하기</button>
                 </div>
             </div>
         </div>
@@ -1332,7 +1332,7 @@
 <!-- ===== 일반 모달: 게임 생성 ===== -->
 <div class="modal-overlay" id="createModal" style="display:none" onclick="if(event.target===this)closeModal('createModal')">
     <div class="modal modal-sm">
-        <div class="modal-header"><div class="modal-title">🎮 새 게임 만들기 <span style="display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:var(--coral-bg);color:var(--coral);margin-left:8px;vertical-align:middle">DEMO</span></div><button class="modal-close" onclick="closeModal('createModal')">✕</button></div>
+        <div class="modal-header"><div class="modal-title">🎮 새 게임 만들기 <span id="demoBadge" style="display:none;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;background:var(--coral-bg);color:var(--coral);margin-left:8px;vertical-align:middle">DEMO</span></div><button class="modal-close" onclick="closeModal('createModal')">✕</button></div>
         <div class="modal-body">
             <div class="form-group"><label class="form-label">프로젝트명 <span style="color:var(--text-muted);font-weight:400">(선택)</span></label><input class="form-input" placeholder="예: 뱀파이어 서바이벌"></div>
             <div class="form-group"><label class="form-label">게임 장르 <span style="color:var(--text-muted);font-weight:400">(선택)</span></label><div class="genre-tags"><span class="genre-tag" onclick="selGenre(this)">퍼즐</span><span class="genre-tag" onclick="selGenre(this)">액션</span><span class="genre-tag" onclick="selGenre(this)">아케이드</span><span class="genre-tag" onclick="selGenre(this)">슈팅</span><span class="genre-tag" onclick="selGenre(this)">전략</span><span class="genre-tag" onclick="selGenre(this)">기타</span></div></div>
@@ -1722,6 +1722,10 @@ document.addEventListener('keydown', function introKey(e){
 }, {once: false});
 
 function toggleSpecMode(){document.body.classList.toggle('spec-mode');const b=document.getElementById('specToggle');b.classList.toggle('active');b.textContent=document.body.classList.contains('spec-mode')?'📋 화면정의서 모드 OFF':'📋 화면정의서 모드 ON';}
+function openDemoModal(){
+    document.getElementById('demoBadge').style.display='inline-block';
+    openModal('createModal');
+}
 function openModal(id){
     const el = document.getElementById(id);
     if(!el) return;
@@ -1736,7 +1740,7 @@ function closeModal(id){
     const el = document.getElementById(id);
     if(!el) return;
     el.classList.remove('active');
-    setTimeout(()=>{ el.style.display = 'none'; }, 450);
+    setTimeout(()=>{ el.style.display = 'none'; if(id==='createModal') document.getElementById('demoBadge').style.display='none'; }, 450);
 }
 // ===== 슬라이드 업 모달 (미끄러지는 애니메이션) =====
 function openSlideup(){
