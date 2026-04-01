@@ -1928,6 +1928,7 @@ function runPipeline(){
     function activateStage(){
         if(idx>=pipelineData.length){
             detailPanel.classList.remove('open');
+            progressBar.style.width='100%';
             progressBar.style.background='linear-gradient(90deg, var(--success), #51cf66)';
             completeEl.classList.add('visible');
             pipelineStarted=false;
@@ -1948,7 +1949,7 @@ function runPipeline(){
         name.style.color=colorVars[idx];
         bubble.textContent=data.msg;
         bubble.classList.add('visible');
-        progressBar.style.width=(idx/(pipelineData.length-1)*83.33)+'%';
+        progressBar.style.width=(idx/(pipelineData.length-1)*100)+'%';
 
         // 상세 패널 자동 열기
         showAgentDetail(idx);
