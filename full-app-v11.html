@@ -164,7 +164,7 @@
         .pipeline-bottom{width:100%;max-width:700px;min-height:180px;position:relative;}
         .pipeline-timeline{position:relative;width:100%;}
         .pipeline-track{display:flex;justify-content:space-between;position:relative;z-index:1;}
-        .pipeline-track::before{content:'';position:absolute;top:28px;left:calc(100%/12);right:calc(100%/12);height:3px;background:var(--border-light);border-radius:2px;z-index:0;}
+        .pipeline-track::before{content:'';position:absolute;top:28px;left:calc(100%/12);width:calc(100% - 100%/6);height:3px;background:var(--border-light);border-radius:2px;z-index:0;}
         .pipeline-progress{position:absolute;top:28px;left:calc(100%/12);height:3px;border-radius:2px;background:linear-gradient(90deg,var(--coral),#ff922b,var(--agent-design));transition:width 1s ease-out;z-index:0;width:0;}
         .pipeline-node{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-height:120px;}
         .pipeline-avatar{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--border);background:var(--bg-tertiary);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);position:relative;cursor:pointer;}
@@ -1861,7 +1861,7 @@ const pipelineData = [
      detail:'화면 렌더링과 인터랙션 코드를 작성합니다.',input:'디자인 스펙 + 아키텍처',outputDesc:'HTML/CSS/Canvas 렌더링 코드',example:'Canvas에 캐릭터/몬스터 그리기 + 애니메이션 루프'},
     {agent:'백엔드팀',msg:'게임 로직을 짜고 있어요...',done:'로직 완성! 코드 합치기 완료 🎮',output:'⚙️ game.js → 🔍 QA',
      detail:'게임 핵심 로직과 상태 관리를 구현합니다.',input:'기획서 + 아키텍처',outputDesc:'게임 로직, 충돌 감지, 점수 시스템',example:'몬스터 스폰 로직 + 자동 공격 시스템 + 레벨업 구현'},
-    {agent:'QA팀',msg:'게임을 테스트하고 있어요...',done:'테스트 통과! 게임 완성 🎉',output:'✅ PASS → 🎮 출시!',
+    {agent:'QA팀',msg:'게임을 테스트하고 있어요...',done:'테스트 통과! 게임 완성 🎉',output:'✅ PASS',
      detail:'생성된 코드를 분석하고 버그를 찾습니다.',input:'합쳐진 게임 코드',outputDesc:'테스트 리포트, 버그 목록, PASS/FAIL',example:'구문 오류 검사 → 로직 검증 → 렌더링 테스트 → PASS'},
 ];
 const nodes = document.querySelectorAll('.pipeline-node');
