@@ -571,6 +571,25 @@
             .project-icon { font-size: 22px !important; }
             .project-info-name { font-size: 14px !important; }
 
+            /* 파이프라인 프리뷰 */
+            .pipeline-preview { padding: 0 16px !important; }
+            .pipeline-top { padding: 0 !important; }
+            .pipeline-track { flex-direction: column !important; gap: 20px !important; }
+            .pipeline-track::before { display: none !important; }
+            .pipeline-progress { display: none !important; }
+            .pipeline-progress-done { display: none !important; }
+            .pipeline-node { flex-direction: row !important; gap: 14px !important; min-height: auto !important; }
+            .pipeline-avatar { width: 44px !important; height: 44px !important; font-size: 20px !important; flex-shrink: 0; }
+            .pipeline-agent-name { font-size: 14px !important; text-align: left !important; }
+            .pipeline-bubble { position: static !important; transform: none !important; width: auto !important; max-width: none !important; white-space: normal !important; text-align: left !important; font-size: 12px !important; }
+            .pipeline-bubble.visible { transform: none !important; }
+            .pipeline-output { position: static !important; transform: none !important; text-align: left !important; margin-top: 4px; }
+            .pipeline-bottom { min-height: auto !important; }
+            .agent-detail-inner { flex-direction: column !important; gap: 12px !important; }
+            .agent-detail-section:last-child { border-left: none !important; padding-left: 0 !important; border-top: 1px solid var(--border-light); padding-top: 12px !important; }
+            .pipeline-complete-card { flex-direction: column !important; text-align: center !important; gap: 10px !important; padding: 16px 20px !important; }
+            .scroll-hint { bottom: 16px !important; }
+
             /* 설정 */
             .settings-card { padding: 16px !important; }
             .health-item { font-size: 13px !important; }
@@ -1155,8 +1174,14 @@
             <tr><td>헤더</td><td>[감사 로그]</td><td><span class="ft ft-modal">일반 모달</span></td><td>감사 로그 모달 팝업</td><td><span class="ft ft-api">API-LOG-003</span></td></tr>
             <tr><td>헤더</td><td>[설정]</td><td><span class="ft ft-modal">일반 모달</span></td><td>설정 모달 팝업</td><td><span class="ft ft-api">API-SET-001</span></td></tr>
             <tr><td>헤더</td><td>🌙 토글</td><td><span class="ft ft-click">클릭</span></td><td>라이트↔다크 테마 전환</td><td>—</td></tr>
-            <tr><td>히어로</td><td>[🎮 게임 생성]</td><td><span class="ft ft-modal">일반 모달</span></td><td>게임 생성 폼 모달</td><td>—</td></tr>
-            <tr><td>히어로</td><td>[게임 둘러보기]</td><td><span class="ft ft-nav">스크롤</span></td><td>플레이그라운드로 스무스 스크롤</td><td>—</td></tr>
+            <tr><td>히어로</td><td>[🎮 30초 데모]</td><td><span class="ft ft-modal">일반 모달</span></td><td>게임 생성 모달 (DEMO 뱃지 표시)</td><td>—</td></tr>
+            <tr><td>히어로</td><td>[👀 구경하기]</td><td><span class="ft ft-nav">스크롤</span></td><td>플레이그라운드로 스무스 스크롤</td><td>—</td></tr>
+            <tr><td>파이프라인</td><td>자동 재생</td><td><span class="ft ft-click">뷰포트 진입</span></td><td>6단계 순차 애니메이션 자동 시작</td><td>—</td></tr>
+            <tr><td>파이프라인</td><td>에이전트 활성화</td><td><span class="ft ft-click">자동</span></td><td>아이콘 활성 + 채팅 버블 + 상세 패널 자동 열림</td><td>—</td></tr>
+            <tr><td>파이프라인</td><td>프로그레스 바</td><td><span class="ft ft-click">자동</span></td><td>진행에 따라 코랄 로딩 → 완료 시 QA 뒤 초록 전환</td><td>—</td></tr>
+            <tr><td>파이프라인</td><td>[게임 완성!] 카드</td><td><span class="ft ft-full">슬라이드 업</span></td><td>클릭 → 프로젝트 상세 모달 열기</td><td><span class="ft ft-api">API-PRJ-003</span></td></tr>
+            <tr><td>파이프라인</td><td>[↻ 다시 보기]</td><td><span class="ft ft-click">클릭</span></td><td>파이프라인 애니메이션 처음부터 재시작</td><td>—</td></tr>
+            <tr><td>파이프라인</td><td>[🎮 30초 데모]</td><td><span class="ft ft-modal">일반 모달</span></td><td>게임 생성 모달 (DEMO 뱃지 표시)</td><td>—</td></tr>
             <tr><td>생성 모달</td><td>장르 태그</td><td><span class="ft ft-click">클릭</span></td><td>단일 선택 (토글)</td><td>—</td></tr>
             <tr><td>생성 모달</td><td>요구사항 입력</td><td><span class="ft ft-click">입력</span></td><td>실시간 글자수 카운트, 10자 이상 시 버튼 활성화</td><td>검증: NT-ERR-V001</td></tr>
             <tr><td>생성 모달</td><td>[게임 생성 요청]</td><td><span class="ft ft-api">API 호출</span></td><td>모달 닫기 → 슬라이드 업 상세 모달 열기 → SSE 연결</td><td><span class="ft ft-api">API-PRJ-001</span></td></tr>
@@ -1208,7 +1233,11 @@
             <tr><td><b>모달 닫기</b></td><td colspan="3">일반: scale→0.92 + fadeOut 0.4s / 풀스크린: translateY→100% ease-in 0.45s + 오버레이 동기 페이드</td></tr>
             <tr><td><b>모달 닫기 방법</b></td><td>ESC, 오버레이 클릭, 닫기 버튼</td><td>ESC, 닫기 버튼 + <b>핸들/헤더 드래그 디스미스</b> (150px 이상 끌면 닫힘)</td><td>좌동</td></tr>
             <tr><td><b>탭 (상세 모달)</b></td><td>균등 분할 5개</td><td>수평 스크롤, flex-none, 12px</td><td>좌동</td></tr>
-            <tr><td><b>파이프라인</b></td><td>dot 36px, label 11px</td><td>dot 30px, label 9px</td><td>dot 26px, label 8px</td></tr>
+            <tr><td><b>파이프라인 (상세)</b></td><td>dot 36px, label 11px</td><td>dot 30px, label 9px</td><td>dot 26px, label 8px</td></tr>
+            <tr><td><b>파이프라인 프리뷰</b></td><td>가로 6개 노드 + 프로그레스 바</td><td>세로 스택 (라인 숨김), 노드 가로 배치 (아이콘+이름+버블)</td><td>좌동</td></tr>
+            <tr><td><b>에이전트 상세 패널</b></td><td>가로 2열 (설명 | 예시)</td><td>세로 1열 스택</td><td>좌동</td></tr>
+            <tr><td><b>데모 모드</b></td><td colspan="3">30초 데모 버튼 → 생성 모달에 DEMO 뱃지 표시, 일반 생성과 동일 플로우 (더미 에이전트)</td></tr>
+            <tr><td><b>풀페이지 스냅</b></td><td colspan="3">히어로 → 파이프라인 mandatory 스냅, 플레이그라운드 이후 자유 스크롤</td></tr>
             <tr><td><b>소스코드</b></td><td>좌 파일트리 + 우 코드뷰어</td><td>상 파일트리(가로 스크롤) + 하 코드뷰어</td><td>좌동</td></tr>
             <tr><td><b>개요 그리드</b></td><td>2열</td><td>1열 스택</td><td>좌동</td></tr>
             <tr><td><b>필터 바</b></td><td>flex-wrap</td><td>가로 스크롤 (nowrap)</td><td>좌동</td></tr>
