@@ -1966,27 +1966,18 @@ function runPipeline(){
     let idx = 0;
     resetPipeline();
 
-    var totalTime = pipelineData.length * 3.2;
-
     function activateStage(){
         if(idx>=pipelineData.length){
             progressDone.style.opacity='1';
-            setTimeout(()=>{
-                detailPanel.classList.remove('open');
-                completeEl.classList.add('visible');
-            }, 300);
+            completeEl.classList.add('visible');
+            detailPanel.classList.remove('open');
             pipelineStarted=false;
             return;
         }
 
-        // 첫 단계: 프로그레스 바 한번에 출발
-        if(idx===0){
-            progressBar.style.transition='none';
-            progressBar.style.transform='scaleX(0)';
-            void progressBar.offsetHeight;
-            progressBar.style.transition='transform '+totalTime+'s linear';
-            progressBar.style.transform='scaleX(1)';
-        }
+        // 프로그레스 바: 해당 아이콘 위치까지 2s linear
+        progressBar.style.transition='transform 2s linear';
+        progressBar.style.transform='scaleX('+((idx+1)/pipelineData.length)+')';
 
         const node=nodes[idx];
         const av=node.querySelector('.pipeline-avatar');
