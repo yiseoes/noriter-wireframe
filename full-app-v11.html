@@ -165,7 +165,8 @@
         .pipeline-timeline{position:relative;width:100%;}
         .pipeline-track{display:flex;justify-content:space-between;position:relative;z-index:1;}
         .pipeline-track::before{content:'';position:absolute;top:28px;left:calc(100%/12 + 28px);right:0;height:3px;background:var(--border-light);border-radius:2px;z-index:0;}
-        .pipeline-progress{position:absolute;top:28px;left:calc(100%/12 + 28px);right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--coral),#ff922b,var(--agent-design));transition:transform 2.5s cubic-bezier(0.16,1,0.3,1), background 0.6s ease;z-index:1;transform-origin:left;transform:scaleX(0);}
+        .pipeline-progress{position:absolute;top:28px;left:calc(100%/12 + 28px);right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--coral),#ff922b,var(--agent-design));transition:transform 2.5s cubic-bezier(0.16,1,0.3,1);z-index:1;transform-origin:left;transform:scaleX(0);}
+        .pipeline-progress-done{position:absolute;top:28px;left:calc(100%/12 + 28px);right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--success),#51cf66);z-index:2;opacity:0;transition:opacity 0.8s ease;}
         .pipeline-node{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-height:120px;}
         .pipeline-avatar{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--border);background:var(--bg-tertiary);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);position:relative;cursor:pointer;}
         .pipeline-avatar.active{transform:scale(1.15);border-color:currentColor;}
@@ -1272,7 +1273,8 @@
             <p style="color:var(--text-muted);font-size:15px;margin-bottom:40px">6명의 에이전트가 순서대로 협업하는 과정을 지켜보세요</p>
 
             <div class="pipeline-timeline">
-            <div class="pipeline-progress" id="pipelineProgress" style="width:0"></div>
+            <div class="pipeline-progress" id="pipelineProgress"></div>
+            <div class="pipeline-progress-done" id="pipelineProgressDone"></div>
             <div class="pipeline-track" id="pipelineTrack">
                 <div class="pipeline-node" data-idx="0"><div class="pipeline-avatar" data-emoji="📋" style="color:var(--agent-planning)">📋</div><div class="pipeline-agent-name" style="color:var(--text-muted)">기획팀</div><div class="pipeline-bubble" style="background:var(--agent-planning-bg);border-color:rgba(174,62,201,0.3);color:var(--agent-planning)"></div><div class="pipeline-output"></div></div>
                 <div class="pipeline-node" data-idx="1"><div class="pipeline-avatar" data-emoji="👔" style="color:var(--agent-cto)">👔</div><div class="pipeline-agent-name" style="color:var(--text-muted)">CTO</div><div class="pipeline-bubble" style="background:var(--agent-cto-bg);border-color:rgba(66,99,235,0.3);color:var(--agent-cto)"></div><div class="pipeline-output"></div></div>
@@ -1869,6 +1871,7 @@ const progressBar = document.getElementById('pipelineProgress');
 const completeEl = document.getElementById('pipelineComplete');
 const detailPanel = document.getElementById('agentDetail');
 const detailInner = document.getElementById('agentDetailInner');
+const progressDone = document.getElementById('pipelineProgressDone');
 const colors=['#ae3ec9','#4263eb','#e64980','#0ca678','#e67700','#f76707'];
 const colorVars=['var(--agent-planning)','var(--agent-cto)','var(--agent-design)','var(--agent-frontend)','var(--agent-backend)','var(--agent-qa)'];
 const bgVars=['var(--agent-planning-bg)','var(--agent-cto-bg)','var(--agent-design-bg)','var(--agent-frontend-bg)','var(--agent-backend-bg)','var(--agent-qa-bg)'];
@@ -1914,7 +1917,7 @@ function resetPipeline(){
         name.style.color='var(--text-muted)';
     });
     progressBar.style.transform='scaleX(0)';
-    progressBar.style.background='linear-gradient(90deg,var(--coral),#ff922b,var(--agent-design))';
+    progressDone.style.opacity='0';
     completeEl.classList.remove('visible');
     detailPanel.classList.remove('open');
 }
@@ -1929,7 +1932,7 @@ function runPipeline(){
         if(idx>=pipelineData.length){
             detailPanel.classList.remove('open');
             progressBar.style.transform='scaleX(1)';
-            progressBar.style.background='linear-gradient(90deg, var(--success), #51cf66)';
+            progressDone.style.opacity='1';
             completeEl.classList.add('visible');
             pipelineStarted=false;
             return;
