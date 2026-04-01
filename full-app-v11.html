@@ -159,7 +159,9 @@
         @keyframes arrowBounce{0%,100%{transform:rotate(45deg) translate(0,0);}50%{transform:rotate(45deg) translate(4px,4px);}}
 
         /* ===== 파이프라인 프리뷰 섹션 ===== */
-        .pipeline-preview{padding:80px 32px;text-align:center;position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+        .pipeline-preview{padding:60px 32px 32px;text-align:center;position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;}
+        .pipeline-top{flex-shrink:0;padding-top:60px;}
+        .pipeline-bottom{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:200px;position:relative;width:100%;}
         .pipeline-timeline{position:relative;max-width:900px;width:100%;margin:0 auto;}
         .pipeline-track{display:flex;justify-content:space-between;position:relative;z-index:1;}
         .pipeline-track::before{content:'';position:absolute;top:28px;left:40px;right:40px;height:3px;background:var(--border-light);border-radius:2px;z-index:0;}
@@ -174,15 +176,15 @@
         .pipeline-bubble{margin-top:10px;padding:8px 14px;border-radius:14px;font-size:11px;line-height:1.5;max-width:150px;border:2px solid;opacity:0;transform:translateY(8px);transition:all 0.4s cubic-bezier(0.16,1,0.3,1);}
         .pipeline-bubble.visible{opacity:1;transform:translateY(0);}
         .pipeline-output{margin-top:8px;font-size:10px;color:var(--text-muted);}
-        .pipeline-complete{margin-top:48px;opacity:0;transform:translateY(20px) scale(0.9);transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);}
-        .pipeline-complete.visible{opacity:1;transform:translateY(0) scale(1);}
+        .pipeline-complete{opacity:0;transform:translateY(20px) scale(0.9);transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);position:absolute;left:0;right:0;top:0;pointer-events:none;}
+        .pipeline-complete.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
         .pipeline-complete-card{display:inline-flex;align-items:center;gap:16px;padding:20px 36px;border-radius:20px;background:linear-gradient(135deg,rgba(255,107,107,0.1),rgba(255,168,168,0.15));border:2px solid rgba(255,107,107,0.3);}
         .pipeline-replay{margin-top:16px;padding:8px 20px;border-radius:12px;background:none;border:1.5px solid var(--border);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;}
         .pipeline-replay:hover{border-color:var(--coral);color:var(--coral);}
 
         /* ===== 에이전트 상세 패널 ===== */
-        .agent-detail{max-height:0;overflow:hidden;transition:max-height 0.5s cubic-bezier(0.16,1,0.3,1),opacity 0.4s,margin 0.4s;opacity:0;margin-top:0;}
-        .agent-detail.open{max-height:300px;opacity:1;margin-top:20px;}
+        .agent-detail{overflow:hidden;transition:opacity 0.4s ease;opacity:0;position:absolute;left:0;right:0;top:0;pointer-events:none;}
+        .agent-detail.open{opacity:1;pointer-events:auto;}
         .agent-detail-inner{background:var(--bg-secondary);border:2px solid var(--border-light);border-radius:16px;padding:20px 24px;display:flex;gap:20px;text-align:left;max-width:700px;margin:0 auto;}
         .agent-detail-section{flex:1;}
         .agent-detail-title{font-size:13px;font-weight:700;margin-bottom:8px;}
@@ -1264,11 +1266,12 @@
 
     <!-- ===== 파이프라인 + 에이전트 통합 섹션 ===== -->
     <section class="pipeline-preview snap-section" id="pipelinePreview">
-        <div class="section-label">Meet the Crew & Live Pipeline</div>
-        <div class="section-heading" style="margin-bottom:8px">AI 친구들이 이렇게 게임을 만들어요 🚀</div>
-        <p style="color:var(--text-muted);font-size:15px;margin-bottom:40px">6명의 에이전트가 순서대로 협업하는 과정을 지켜보세요</p>
+        <div class="pipeline-top">
+            <div class="section-label">Meet the Crew & Live Pipeline</div>
+            <div class="section-heading" style="margin-bottom:8px">AI 친구들이 이렇게 게임을 만들어요 🚀</div>
+            <p style="color:var(--text-muted);font-size:15px;margin-bottom:40px">6명의 에이전트가 순서대로 협업하는 과정을 지켜보세요</p>
 
-        <div class="pipeline-timeline">
+            <div class="pipeline-timeline">
             <div class="pipeline-progress" id="pipelineProgress" style="width:0"></div>
             <div class="pipeline-track" id="pipelineTrack">
                 <div class="pipeline-node" data-idx="0"><div class="pipeline-avatar" data-emoji="📋" style="color:var(--agent-planning)">📋</div><div class="pipeline-agent-name" style="color:var(--text-muted)">기획팀</div><div class="pipeline-bubble" style="background:var(--agent-planning-bg);border-color:rgba(174,62,201,0.3);color:var(--agent-planning)"></div><div class="pipeline-output"></div></div>
@@ -1279,24 +1282,25 @@
                 <div class="pipeline-node" data-idx="5"><div class="pipeline-avatar" data-emoji="🔍" style="color:var(--agent-qa)">🔍</div><div class="pipeline-agent-name" style="color:var(--text-muted)">QA팀</div><div class="pipeline-bubble" style="background:var(--agent-qa-bg);border-color:rgba(247,103,7,0.3);color:var(--agent-qa)"></div><div class="pipeline-output"></div></div>
             </div>
         </div>
+        </div><!-- /pipeline-top -->
 
-        <!-- 에이전트 상세 (애니메이션 중 자동 열림) -->
-        <div class="agent-detail" id="agentDetail">
-            <div class="agent-detail-inner" id="agentDetailInner"></div>
-        </div>
-
-        <!-- 완성 카드 -->
-        <div class="pipeline-complete" id="pipelineComplete">
-            <div class="pipeline-complete-card" style="cursor:pointer" onclick="openSlideup()">
-                <span style="font-size:40px">🎮</span>
-                <div style="text-align:left">
-                    <div style="font-size:18px;font-weight:700">게임 완성! <span style="font-size:13px;font-weight:500;color:var(--coral)">클릭해서 확인하기 →</span></div>
-                    <div style="font-size:14px;color:var(--text-muted)">6명의 AI 에이전트가 협업해서 게임을 만들었어요</div>
-                </div>
+        <!-- 하단 고정 영역: 상세 패널 or 완성 카드 (같은 자리에 교체 표시) -->
+        <div class="pipeline-bottom">
+            <div class="agent-detail" id="agentDetail">
+                <div class="agent-detail-inner" id="agentDetailInner"></div>
             </div>
-            <div style="margin-top:16px;display:flex;gap:8px;justify-content:center">
-                <button class="pipeline-replay" onclick="replayPipeline()">↻ 다시 보기</button>
-                <button class="btn-hero btn-hero-primary" style="padding:12px 28px;font-size:14px" onclick="openModal('createModal')">🎮 30초 데모 체험하기</button>
+            <div class="pipeline-complete" id="pipelineComplete">
+                <div class="pipeline-complete-card" style="cursor:pointer" onclick="openSlideup()">
+                    <span style="font-size:40px">🎮</span>
+                    <div style="text-align:left">
+                        <div style="font-size:18px;font-weight:700">게임 완성! <span style="font-size:13px;font-weight:500;color:var(--coral)">클릭해서 확인하기 →</span></div>
+                        <div style="font-size:14px;color:var(--text-muted)">6명의 AI 에이전트가 협업해서 게임을 만들었어요</div>
+                    </div>
+                </div>
+                <div style="margin-top:16px;display:flex;gap:8px;justify-content:center">
+                    <button class="pipeline-replay" onclick="replayPipeline()">↻ 다시 보기</button>
+                    <button class="btn-hero btn-hero-primary" style="padding:12px 28px;font-size:14px" onclick="openModal('createModal')">🎮 30초 데모 체험하기</button>
+                </div>
             </div>
         </div>
     </section>
