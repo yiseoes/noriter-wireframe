@@ -1976,11 +1976,11 @@ function runPipeline(){
         }
 
         // 프로그레스 바: 아이콘 중앙 위치까지 2s linear
-        var target='scaleX('+((2*idx+1)/(2*pipelineData.length))+')';
-        progressBar.style.transition='none';
-        void progressBar.offsetHeight;
-        progressBar.style.transition='transform 2s linear';
-        progressBar.style.transform=target;
+        if(idx===0){
+            void progressBar.offsetHeight;
+            progressBar.style.transition='transform 2s linear';
+        }
+        progressBar.style.transform='scaleX('+((2*idx+1)/(2*pipelineData.length))+')';
 
         const node=nodes[idx];
         const av=node.querySelector('.pipeline-avatar');
