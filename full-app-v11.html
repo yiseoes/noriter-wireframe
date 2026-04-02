@@ -165,7 +165,7 @@
         .pipeline-timeline{position:relative;width:100%;}
         .pipeline-track{display:flex;justify-content:space-between;position:relative;z-index:1;}
         .pipeline-track::before{content:'';position:absolute;top:28px;left:calc(100%/12 + 28px);right:0;height:3px;background:var(--border-light);border-radius:2px;z-index:0;}
-        .pipeline-progress{position:absolute;top:28px;left:0;right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--coral),#ff922b,var(--agent-design));z-index:1;transform-origin:left;transform:scaleX(0);}
+        .pipeline-progress{position:absolute;top:28px;left:calc(100%/12 + 28px);right:0;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--coral),#ff922b,var(--agent-design));z-index:2;transform-origin:left;transform:scaleX(0);}
         .pipeline-progress-done{position:absolute;top:28px;left:calc(100% * 11/12 + 32px);right:0;height:3px;border-radius:0 2px 2px 0;background:linear-gradient(90deg,var(--success),#51cf66);z-index:5;opacity:0;transition:opacity 0.8s ease;}
         .pipeline-node{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-height:120px;}
         .pipeline-avatar{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--border);background:var(--bg-tertiary);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);position:relative;cursor:pointer;z-index:10;}
@@ -1980,7 +1980,17 @@ function runPipeline(){
             void progressBar.offsetHeight;
             progressBar.style.transition='transform 2s linear';
         }
-        progressBar.style.transform='scaleX('+((2*idx+1)/(2*pipelineData.length))+')';
+        // 배경 라인 범위 기준으로 아이콘 위치 계산
+        // 배경 라인: 첫 아이콘 중앙+28px ~ track 끝
+        // idx번째 아이콘 중앙 = (2*idx+1)/(2*n) * trackWidth
+        // 배경 라인 시작 = (1/(2*n) + 28/trackWidth) * trackWidth
+        // 상대 비율 = (아이콘 중앙 - 배경시작) / (track끝 - 배경시작)
+        var n=pipelineData.length;
+        var iconPos=(2*idx+1)/(2*n);
+        var barStart=1/(2*n);
+        var ratio=(iconPos-barStart)/(1-barStart);
+        if(ratio<0) ratio=0;
+        progressBar.style.transform='scaleX('+ratio+')';
 
         const node=nodes[idx];
         const av=node.querySelector('.pipeline-avatar');
