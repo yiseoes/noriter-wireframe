@@ -28,13 +28,11 @@
 
         /* ===== 풀페이지 스냅 (히어로 + 에이전트까지만) ===== */
         .snap-container{
-            height:100vh;overflow-y:auto;
-            scroll-snap-type:y mandatory;
+            height:100vh;overflow-y:hidden;
             scroll-behavior:smooth;
         }
         .snap-section{
             min-height:100vh;
-            scroll-snap-align:start;
             display:flex;flex-direction:column;justify-content:center;align-items:center;
         }
         /* 마지막 섹션: 스냅 포인트이되 내부에서 자유 스크롤 */
@@ -1271,7 +1269,7 @@
 
 <!-- ===== 홈 ===== -->
 <div id="homePage" class="snap-container">
-    <section class="hero snap-section">
+    <section class="hero snap-section" data-snap>
         <div class="hero-glow hero-glow-1"></div>
         <div class="hero-glow hero-glow-2"></div>
         <div class="hero-glow hero-glow-3"></div>
@@ -1295,7 +1293,7 @@
     </section>
 
     <!-- ===== 파이프라인 + 에이전트 통합 섹션 ===== -->
-    <section class="pipeline-preview snap-section" id="pipelinePreview">
+    <section class="pipeline-preview snap-section" id="pipelinePreview" data-snap>
         <div class="pipeline-top">
             <div class="section-label">Meet the Crew & Live Pipeline</div>
             <div class="section-heading" style="margin-bottom:8px">AI 친구들이 이렇게 게임을 만들어요 🚀</div>
@@ -1340,7 +1338,7 @@
         </div>
     </section>
 
-    <div class="snap-section-scroll">
+    <div class="snap-section-scroll" data-snap>
     <section class="playground" id="playground">
         <div class="playground-header">
             <div><div class="section-label reveal">Playground</div><div class="section-heading reveal" style="margin-bottom:0">놀이터 🎡</div><div class="playground-sub">AI 친구들이 만든 게임을 바로 플레이해보세요!</div></div>
@@ -2033,6 +2031,46 @@ const pipelineObserver=new IntersectionObserver(([e])=>{
 },{threshold:0.4});
 const pipelineSection=document.getElementById('pipelinePreview');
 if(pipelineSection) pipelineObserver.observe(pipelineSection);
+
+// ===== JS 스냅 스크롤 (React useSnapScroll과 동일) =====
+(function(){
+    var container=document.getElementById('homePage');
+    if(!container) return;
+    var sections=container.querySelectorAll('[data-snap]');
+    var current=0, isScrolling=false, accumulated=0, wheelTimeout;
+
+    function scrollTo(idx){
+        if(isScrolling||idx<0||idx>=sections.length) return;
+        isScrolling=true; current=idx;
+        sections[idx].scrollIntoView({behavior:'smooth'});
+        setTimeout(function(){isScrolling=false;},800);
+    }
+
+    container.addEventListener('wheel',function(e){
+        var last=sections[sections.length-1];
+        if(last&&last.contains(e.target)){
+            if(e.deltaY<0&&last.scrollTop<=0){e.preventDefault();scrollTo(current-1);}
+            return;
+        }
+        e.preventDefault();
+        accumulated+=e.deltaY;
+        clearTimeout(wheelTimeout);
+        wheelTimeout=setTimeout(function(){accumulated=0;},200);
+        if(Math.abs(accumulated)<50) return;
+        if(accumulated>0) scrollTo(current+1); else scrollTo(current-1);
+        accumulated=0;
+    },{passive:false});
+
+    var touchY=0;
+    container.addEventListener('touchstart',function(e){touchY=e.touches[0].clientY;},{passive:true});
+    container.addEventListener('touchend',function(e){
+        var last=sections[sections.length-1];
+        if(last&&last.contains(e.target)&&last.scrollTop>0) return;
+        var dy=touchY-e.changedTouches[0].clientY;
+        if(Math.abs(dy)<50) return;
+        if(dy>0) scrollTo(current+1); else scrollTo(current-1);
+    },{passive:true});
+})();
 
 // ===== 히어로 떠다니는 이모지 파티클 =====
 (function(){
